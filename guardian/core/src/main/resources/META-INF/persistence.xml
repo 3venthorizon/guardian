@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://xmlns.jcp.org/xml/ns/persistence"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistencehttp://xmlns.jcp.org/xml/ns/persistence/persistence_2_1.xsd"
+	version="2.1">
+	<persistence-unit name="realm" transaction-type="JTA">
+		<jta-data-source>jdbc/Realm</jta-data-source>
+		<class>co.dewald.guardian.realm.RealmEntity</class>
+		<class>co.dewald.guardian.realm.AccessLog</class>
+		<class>co.dewald.guardian.realm.Permission</class>
+		<class>co.dewald.guardian.realm.Role</class>
+		<class>co.dewald.guardian.realm.Subject</class>
+		<class>co.dewald.guardian.realm.Period</class>
+		<class>co.dewald.guardian.realm.State</class>
+		<shared-cache-mode>NONE</shared-cache-mode>
+	</persistence-unit>
+</persistence>
