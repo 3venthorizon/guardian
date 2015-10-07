@@ -15,7 +15,7 @@ The Guardian can be entrusted to protect your **resources** in the following way
 * Administration - Tell the Guardian _Who_ may access _What_ and also _When_ they can do so.
 
 # Guarding Resources
-Guarding is an active process and appropriately described with the verb. The **@Guard** intercept annotation will indicate to the Guardian which Java class or method requires _guarding_. 
+Guarding is an active process and appropriately described with the verb. The [@Guard](https://github.com/3venthorizon/guardian/blob/master/guardian/gatekeeper/src/main/java/co/dewald/guardian/gate/Guard.java) intercept annotation will indicate to the Guardian which Java class or method requires guarding. 
 
     import co.dewald.guardian.gate.Grant;
     import co.dewald.guardian.gate.Guard;
