@@ -15,7 +15,9 @@ The Guardian can be entrusted to protect your **resources** in the following way
 * Administration - Tell the Guardian _Who_ may access _What_ and also _When_ they can do so.
 
 # Guarding Resources
-Guarding is an active process and appropriately described with the verb. The [@Guard](https://github.com/3venthorizon/guardian/blob/master/guardian/gatekeeper/src/main/java/co/dewald/guardian/gate/Guard.java) intercept annotation will indicate to the Guardian which Java class or method requires guarding. 
+A [Resource](https://github.com/3venthorizon/guardian/wiki/Resources) is any conceptual thing that can be Accessed in a system. Thus the Access to Functions and Data are respectively defined as Resources. In Java that would translate to Methods(Functions) and Objects(Data).
+
+Guarding is an active process and appropriately described with the verb. The [@Guard](https://github.com/3venthorizon/guardian/blob/master/guardian/gatekeeper/src/main/java/co/dewald/guardian/gate/Guard.java) intercept annotation will indicate to the Guardian which Java class or method requires guarding. You may also apply [@Grant](https://github.com/3venthorizon/guardian/blob/master/guardian/gatekeeper/src/main/java/co/dewald/guardian/gate/Grant.java) annotations to Resources(classes, methods and parameter objects) that will provide further meta-data to the Guardian about how to control access to that Resource.
 
     import co.dewald.guardian.gate.Grant;
     import co.dewald.guardian.gate.Guard;
@@ -42,4 +44,4 @@ Guarding is an active process and appropriately described with the verb. The [@G
         }
     }
 
-Conceptually a resource represents a security [Permission](https://github.com/3venthorizon/guardian/blob/master/guardian/core/src/main/java/co/dewald/guardian/realm/Permission.java) and is uniquely identifiable by a **resource - [action or value]** java.lang.String pair. [Resources](https://github.com/3venthorizon/guardian/wiki/Resources) are annotated on the Java [class, method, parameter] definition with the [@Grant](https://github.com/3venthorizon/guardian/blob/master/guardian/gatekeeper/src/main/java/co/dewald/guardian/gate/Grant.java) annotation. The actions that can be performed on a resource or class is defined by the class's methods. Method parameters and return values may also be viewed as respective Permissions. In which case the parameter or type class need to be annotated to indicate a resource while the java.lang.Object#toString() will define the value in the Permission java.lang.String pair.
+
