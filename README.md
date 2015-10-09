@@ -1,7 +1,9 @@
 # Guardian #
-The Guardian is a Java Enterprise Security Enforcer.
+The Guardian is a Java Enterprise Security Enforcer. [License LGPL 3.0](http://www.gnu.org/licenses/lgpl-3.0.txt)
 
-Security is _enforced_ through Java invocation interception. Where the code and data under guard is _intercepted_ for authorization against an authenticated caller.
+Security is enforced through Java invocation interception. Where the functions and data under [@Guard](https://github.com/3venthorizon/guardian/blob/master/guardian/gatekeeper/src/main/java/co/dewald/guardian/gate/Guard.java) is intercepted for Authorization against an Authenticated caller.
+
+The Guardian is perfect for Security Retrofitting of existing application systems: This is because the the Authorization logic is Decorated over the Intercepted invocation code.
 
 In many ways the Guardian is personified as a Servant Protector of your [Application's Services and Data Resources](https://github.com/3venthorizon/guardian/wiki/Resources). Meaning, your Application's Services and Data Resources are not subjects of the Guardian where they are constantly asking(code API invocation) for [Permission](https://github.com/3venthorizon/guardian/blob/master/guardian/core/src/main/java/co/dewald/guardian/realm/Permission.java). Rather, the Guardian protects([intercepts](https://github.com/3venthorizon/guardian/blob/master/guardian/gatekeeper/src/main/java/co/dewald/guardian/gate/Guard.java)) those Resources marked([annotated code](https://github.com/3venthorizon/guardian/blob/master/guardian/gatekeeper/src/main/java/co/dewald/guardian/gate/Grant.java)) and applies the security Permission rules & knowledge([Realm](https://github.com/3venthorizon/guardian/wiki/Realm)) contracted(setup) by you the custodian of the Application System.
 
