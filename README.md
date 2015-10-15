@@ -46,4 +46,4 @@ Guarding is an active process and appropriately described with the verb. The [@G
         }
     }
 
-
+Annotating Resources allows the Guardian to intercept and identify them during run-time execution. These Resources also need to be cataloged and stored in the Permission database table. Only then can [Permissions(Resources)](https://github.com/3venthorizon/guardian/blob/master/guardian/core/src/main/java/co/dewald/guardian/realm/Permission.java) be associated with [Roles](https://github.com/3venthorizon/guardian/blob/master/guardian/core/src/main/java/co/dewald/guardian/realm/Role.java), and Roles be associated with [Users](https://github.com/3venthorizon/guardian/blob/master/guardian/core/src/main/java/co/dewald/guardian/realm/Subject.java).
