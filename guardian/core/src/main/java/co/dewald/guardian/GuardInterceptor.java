@@ -52,8 +52,6 @@ public class GuardInterceptor {
         Class<?> type = method.getDeclaringClass();
         String resource = type.getName();
         String action = method.getName();
-        Boolean state = guardian.checkState(resource, action);
-        if (!Boolean.TRUE.equals(state)) return null;
         
         boolean check = true;
         boolean filter = false;
@@ -72,6 +70,8 @@ public class GuardInterceptor {
             filter = grantAction.filter();
         }
         
+        Boolean state = guardian.checkState(resource, action);
+        if (!Boolean.TRUE.equals(state)) return null;
         if (!check) return ctx.proceed(); 
         authorise(session.getUsername(), resource, action);
         if (!filter) return ctx.proceed();
