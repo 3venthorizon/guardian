@@ -23,7 +23,7 @@ import co.dewald.guardian.realm.dao.RealmDAO;
  * 
  * @author Dewald Pretorius
  */
-@Stateless
+@Stateless(name = "GuardianCore")
 public class GuardianEJB implements Guardian {
     
     @EJB RealmDAO realm;

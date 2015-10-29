@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>co.dewald</groupId>
 		<artifactId>guardian</artifactId>
-		<version>0.0.7</version>
+		<version>0.0.8</version>
 	</parent>
 	<artifactId>guardian-ear</artifactId>
 	<packaging>ear</packaging>
@@ -13,10 +13,6 @@
 
 	<build>
 		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-			</plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-ear-plugin</artifactId>

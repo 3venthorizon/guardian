@@ -1,4 +1,4 @@
-package co.dewald.guardian.session;
+package co.dewald.guardian.interceptors;
 
 
 import java.lang.annotation.Annotation;
@@ -9,6 +9,8 @@ import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
 import co.dewald.guardian.gate.Gate;
+import co.dewald.guardian.gate.Registry;
+import co.dewald.guardian.gate.Session;
 import co.dewald.guardian.gate.Token;
 
 

@@ -1,4 +1,4 @@
-package co.dewald.guardian.session;
+package co.dewald.guardian.gate;
 
 
 import java.util.Collections;

@@ -18,8 +18,8 @@ import co.dewald.guardian.gate.Guardian;
             portName = "GuardianAdmin")
 public class AdminWS {
     
-    @EJB Administration admin;
-    @EJB Guardian guardian;
+    @EJB(beanName = "Bureaucrat") Administration admin;
+    @EJB(beanName = "GuardianCore") Guardian guardian;
     
     @WebMethod
     @WebResult(name = "success")

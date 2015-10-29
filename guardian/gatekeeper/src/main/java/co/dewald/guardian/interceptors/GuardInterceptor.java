@@ -1,4 +1,4 @@
-package co.dewald.guardian;
+package co.dewald.guardian.interceptors;
 
 
 import java.lang.annotation.Annotation;
@@ -12,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
@@ -19,8 +20,8 @@ import javax.interceptor.InvocationContext;
 
 import co.dewald.guardian.gate.Guard;
 import co.dewald.guardian.gate.Guardian;
+import co.dewald.guardian.gate.Session;
 import co.dewald.guardian.gate.Grant;
-import co.dewald.guardian.session.Session;
 
 
 /**
@@ -43,7 +44,7 @@ import co.dewald.guardian.session.Session;
 @Guard @Interceptor 
 public class GuardInterceptor {
     
-    @Inject Guardian guardian;
+    @EJB(beanName = "GuardianCore") Guardian guardian;
     @Inject Session session;
     
     @AroundInvoke

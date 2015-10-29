@@ -6,15 +6,13 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 
 /**
  * @author Dewald Pretorius
  */
+@Grant(name = "Administration")
 public interface Administration {
-    public static final String PASSWORD_REGEX = "^(?=.*\\d)(?=.*[a-z])(?=.*[A-Z])(?=.*[@#$%]).{8,}$";
-    public static final String USERNAME_REGEX = "^[a-z0-9_-]{8,100}$";
     
     /**
      * Register a new Subject.
@@ -22,8 +20,8 @@ public interface Administration {
      * @param username
      * @param password
      */
-    void registerSubject(@Pattern(regexp = USERNAME_REGEX) String username, 
-                         @Pattern(regexp = PASSWORD_REGEX) String password);
+    @Grant(check = false)
+    void registerSubject(String username, String password);
     
     /**
      * Register a new Permission resource and action.
@@ -107,9 +105,7 @@ public interface Administration {
      * @param user
      * @param password
      */
-    void updateSubject(@Pattern(regexp = USERNAME_REGEX) String existing, 
-                       @Pattern(regexp = USERNAME_REGEX) String username,
-                       @Pattern(regexp = PASSWORD_REGEX) String password);
+    void updateSubject(String existing, String username, String password);
     
     /**
      * Updates the Role.

@@ -10,9 +10,4 @@
 	   <class>co.dewald.guardian.interceptors.GateKeeper</class>
 	   <class>co.dewald.guardian.interceptors.GuardInterceptor</class>
 	</interceptors>
-	
-	<decorators>
-		<class>co.dewald.guardian.decorators.GuardAuditor</class>
-	    <class>co.dewald.guardian.decorators.GuardShift</class>
-	</decorators>
 </beans>

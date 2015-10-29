@@ -6,12 +6,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.dewald</groupId>
 	<artifactId>guardian</artifactId>
-	<version>0.0.7</version>
+	<version>0.0.8</version>
 	<packaging>pom</packaging>
 	<name>guardian</name>
 
 	<properties>
-	    <guardian-version>0.0.7</guardian-version>
+	    <guardian-version>0.0.8</guardian-version>
 		<!-- encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--java version -->
@@ -162,9 +162,6 @@
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
 					<version>${war-plugin-version}</version>
-					<configuration>
-						<failOnMissingWebXml>false</failOnMissingWebXml>
-					</configuration>
 				</plugin>
 				
 				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
@@ -197,9 +194,9 @@
 	</build>
 	
 	<modules>
-		<module>core</module>
-		<module>ear</module>
 		<module>gatekeeper</module>
+		<module>core</module>
 		<module>web</module>
+		<module>ear</module>
 	</modules>
 </project>

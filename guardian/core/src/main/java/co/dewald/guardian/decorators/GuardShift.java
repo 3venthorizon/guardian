@@ -1,4 +1,4 @@
-package co.dewald.guardian.session;
+package co.dewald.guardian.decorators;
 
 
 import java.util.List;
@@ -9,6 +9,8 @@ import javax.decorator.Delegate;
 import javax.inject.Inject;
 
 import co.dewald.guardian.gate.Guardian;
+import co.dewald.guardian.gate.Registry;
+import co.dewald.guardian.gate.Session;
 
 
 /**

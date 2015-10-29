@@ -1,4 +1,4 @@
-package co.dewald.guardian.auditor;
+package co.dewald.guardian.decorators;
 
 
 import java.util.List;

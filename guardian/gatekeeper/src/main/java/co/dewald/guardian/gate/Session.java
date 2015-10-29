@@ -1,12 +1,12 @@
-package co.dewald.guardian.session;
+package co.dewald.guardian.gate;
 
 
 import java.io.Serializable;
+import java.security.SecureRandom;
 import java.util.Date;
 
 import javax.enterprise.context.SessionScoped;
-
-import co.dewald.guardian.realm.Subject;
+import javax.xml.bind.DatatypeConverter;
 
 
 /**
@@ -26,8 +26,16 @@ public class Session implements Serializable {
 
     public Session() {
         touched = new Date();
-        token = Subject.salt();
+        token = Session.salt();
         username = GUEST;
+    }
+    
+    static String salt() {
+        byte[] saltBytes = new byte[64];
+        SecureRandom random = new SecureRandom();
+        
+        random.nextBytes(saltBytes);
+        return DatatypeConverter.printBase64Binary(saltBytes);
     }
     
     public void merge(Session that) {

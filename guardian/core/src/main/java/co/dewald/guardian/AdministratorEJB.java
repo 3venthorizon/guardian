@@ -1,4 +1,4 @@
-package co.dewald.guardian.admin;
+package co.dewald.guardian;
 
 
 import co.dewald.guardian.gate.Administration;
@@ -22,7 +22,6 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Pattern;
 
 
 /**
@@ -30,7 +29,7 @@ import javax.validation.constraints.Pattern;
  */
 @Guard
 @Grant(name = "Administration")
-@Stateless
+@Stateless(name = "Bureaucrat")
 public class AdministratorEJB implements Administration {
     
     private static final String RESOURCE = "Administration";
@@ -105,10 +104,8 @@ public class AdministratorEJB implements Administration {
     /**
      * @see Administration#registerSubject(String, String)
      */
-    @Grant(check = false)
     @Override
-    public void registerSubject(@Pattern(regexp = USERNAME_REGEX) String username, 
-                                @Pattern(regexp = PASSWORD_REGEX) String password) {
+    public void registerSubject(String username, String password) {
         Subject subject = new Subject();
         subject.setUsername(username);
         subject.setPassword(password);
@@ -181,9 +178,7 @@ public class AdministratorEJB implements Administration {
      * @see Administration#updateSubject(String, String, String)
      */
     @Override
-    public void updateSubject(@Pattern(regexp = USERNAME_REGEX) String existing, 
-                              @Pattern(regexp = USERNAME_REGEX) String username,
-                              @Pattern(regexp = PASSWORD_REGEX) String password) {
+    public void updateSubject(String existing, String username, String password) {
         Subject subject = realm.findSubjectBy(existing);
         
         subject.setUsername(username);
