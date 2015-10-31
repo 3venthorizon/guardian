@@ -26,18 +26,6 @@ import co.dewald.guardian.gate.Grant;
 
 /**
  * The Guard Interceptor is a runtime annotation processor that is invoked when a {@link Guard}ed resource is accessed.
- * This interceptor will perform the following checks on the {@link Guard}ed context in order:
- * <ol>
- * <li>{@link Guardian#checkState(String, String)} and may throw a {@link SecurityException}</li>
- * <li>When the resource class or action method is <b>@{@link Grant#check()} false</b>, 
- * only the last step is executed.</li>
- * <li>{@link Guardian#authorise(String, String, String)} and may throw a {@link SecurityException}.</li>
- * <li>{@link Guardian#filter(String, String, java.util.Map)} parameter values where the resource or  action or 
- * parameter is @{@link Grant#filter()} true</li>
- * <li><b>Execute</b> and return resource.action(parameters...)</li>
- * <li>{@link Guardian#filter(String, String, java.util.Map)} return values where the resource or  action
- * is @{@link Grant#filter()} true</li>
- * </ol>
  * 
  * @author Dewald Pretorius
  */
@@ -51,32 +39,18 @@ public class GuardInterceptor {
     public Object grant(InvocationContext ctx) throws Exception { 
         Method method = ctx.getMethod();
         Class<?> type = method.getDeclaringClass();
-        String resource = type.getName();
-        String action = method.getName();
+        Grant resource = getResource(type);
+        Grant action = getAction(resource, method);
         
-        boolean check = true;
-        boolean filter = false;
-        
-        Grant grantResource = type.getAnnotation(Grant.class);
-        Grant grantAction = method.getAnnotation(Grant.class);
-        
-        if (grantResource != null) {
-            if (!grantResource.name().isEmpty()) resource = grantResource.name(); 
-            check &= grantResource.check();
-            filter = grantResource.filter();
-        }
-        if (grantAction != null) {
-            if (!grantAction.name().isEmpty()) action = grantAction.name(); 
-            check &= grantAction.check();
-            filter = grantAction.filter();
-        }
-        
-        Boolean state = guardian.checkState(resource, action);
+        Boolean state = guardian.checkState(resource.name(), action.name());
         if (!Boolean.TRUE.equals(state)) return null;
-        if (!check) return ctx.proceed(); 
-        authorise(session.getUsername(), resource, action);
-        if (!filter) return ctx.proceed();
-        filterParameters(ctx, session.getUsername());
+        
+        if (!action.check()) return ctx.proceed(); 
+        authorise(session.getUsername(), resource.name(), action.name());
+        
+        filterMethodParameters(ctx, session.getUsername());
+        
+        if (!(action.filter())) return ctx.proceed();
         return filterResult(ctx, session.getUsername());
     }
     
@@ -88,70 +62,67 @@ public class GuardInterceptor {
         }
     }
     
-    <T> String extractFilteredResource(Collection<T> collection) {
-        if (collection == null || collection.isEmpty()) return null;
+    Grant createGrant(final String name, final boolean check, final boolean filter) {
+        //@formatter:off
+        Grant grant = new Grant() {
+            @Override
+            public Class<? extends Annotation> annotationType() { return Grant.class; }
+            
+            @Override
+            public String name() { return name; }
+            @Override
+            public boolean check() {  return check; }
+            @Override
+            public boolean filter() { return filter; }
+        };
+        //@formatter:on
         
-        for (T element : collection) {
-            if (element == null) continue;
-            String resource = extractFilteredResource(element.getClass());
-            if (resource != null && !resource.isEmpty()) return resource;
-        }
-        
-        return null;
+        return grant;
     }
     
-    String extractFilteredResource(Class<?> clazz) {
-        Grant grant = clazz.getAnnotation(Grant.class);
-        if (grant == null) return null; //data filter name/type undefined
-        if (!grant.filter()) return null; 
-        return grant.name();
+    Grant createGrant(String reflectName, Grant annotated) {
+        if (!annotated.name().isEmpty()) return annotated;
+        return createGrant(reflectName, annotated.check(), annotated.filter());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
     Object filter(String username, String filter, Object object) {
-        Object filtered = object;
-        
-        if (filtered instanceof Map) {
-            Map map = (Map) filtered;
+        if (object instanceof Map) {
+            Map map = (Map) object;
             filterCollection(username, filter, map.keySet());
             filterCollection(username, filter, map.values());
-        } else {
-            Collection<Object> collection; 
-            boolean isCollection = filtered instanceof Collection;
+            
+            return object;
+        } 
 
-            if (isCollection) collection = (Collection) filtered;
-            else {
-                collection = new ArrayList<>();
-                collection.add(filtered);
-            }
-            
-            try {
-                filterCollection(username, filter, collection);
-            } catch (UnsupportedOperationException uoe) {
-                if (collection instanceof List) collection = new LinkedList<>(collection);
-                else if (collection instanceof Set) collection = new LinkedHashSet<>(collection);
-                else throw uoe;
-                
-                filterCollection(username, filter, collection);
-            }
-            
-            if (!isCollection) {
-                return collection.isEmpty() ? null : collection.iterator().next();
-            } else filtered = collection;
+        Collection<Object> collection; 
+        boolean isCollection = object instanceof Collection;
+
+        if (isCollection) collection = (Collection) object;
+        else { //wrap parameter in a mutable/filter safe collection
+            collection = new ArrayList<>();
+            collection.add(object);
         }
         
-        return filtered;
+        try {
+            filterCollection(username, filter, collection);
+            if (!isCollection) return collection.isEmpty() ? null : object; //filter wrapped parameter 
+        } catch (UnsupportedOperationException uoe) { //immutable collection parameter
+            if (collection instanceof List) collection = new LinkedList<>(collection);
+            else if (collection instanceof Set) collection = new LinkedHashSet<>(collection);
+            else throw uoe;
+            
+            filterCollection(username, filter, collection);
+            return collection;
+        }
+
+        return collection;
     }
     
-    /**
-     * @param username
-     * @param resource
-     * @param collection
-     */
     <T> void filterCollection(String username, String resource, Collection<T> collection) {  
         if (collection == null || collection.isEmpty()) return;
-        if (resource == null) resource = extractFilteredResource(collection);
-        if (resource == null || resource.isEmpty()) return; //data filter name/type undefined
+        if (resource == null) resource = getFilterResource(collection);
+        if (resource == null) return; //data filter name/type undefined
         
         Map<String, T> tuple = new LinkedHashMap<>(collection.size()); 
         boolean recursive = false;
@@ -160,7 +131,7 @@ public class GuardInterceptor {
             if (element == null) tuple.put(null, element);
             else if (element instanceof Collection || element instanceof Map) {
                 recursive = true;
-                filter(username, resource, element);
+                filter(username, resource, element); //recursive: call the caller
             } else tuple.put(element.toString(), element);
         }
         
@@ -168,35 +139,53 @@ public class GuardInterceptor {
         
         List<T> filtered = guardian.filter(username, resource, tuple);
         
-        if (filtered == null) collection.clear();
-        else if (filtered.isEmpty()) collection.clear();
+        if (filtered == null || filtered.isEmpty()) collection.clear();
         else collection.retainAll(filtered);
     }
     
-    void filterParameters(InvocationContext ctx, String username) {
+    void filterMethodParameters(InvocationContext ctx, String username) {
         Object[] parameters = ctx.getParameters();
         if (parameters == null || parameters.length < 1) return;
-        Annotation[][] annotations = ctx.getMethod().getParameterAnnotations();
+        
+        boolean filtered = filterParameters(username, ctx.getMethod(), ctx.getParameters());
+        if (filtered) return;
+        
+        Method method = ctx.getMethod();
+        
+        for (Class<?> iclass : method.getDeclaringClass().getInterfaces()) {
+            try {
+                Method imethod = iclass.getMethod(method.getName(), method.getParameterTypes());
+                filtered = filterParameters(username, imethod, ctx.getParameters());
+                if (filtered) return;
+            } catch (NoSuchMethodException e) { }
+        }
+    }
+    
+    boolean filterParameters(String username, Method method, Object[] parameters) {
+        boolean filtered = false;
+        Annotation[][] annotations = method.getParameterAnnotations();
         
         for (int index = 0; index < parameters.length; index++) {
             if (parameters[index] == null) continue;
-            String filter = null;
-            Grant grantParameter = null;
+            Grant grant = null;
             
             for (Annotation annotation : annotations[index]) {
                 if (!(annotation instanceof Grant)) continue;
-                grantParameter = (Grant) annotation;
+                grant = (Grant) annotation;
                 break;
             }
             
-            if (grantParameter != null) {
-                if (grantParameter.name().isEmpty()) {
-                    if (!grantParameter.filter()) continue;
-                } else filter = grantParameter.name();
-            }
+            if (grant == null) continue;
+            if (!grant.filter()) continue;
             
+            filtered = true; //presence of @Grant means it is filtered
+            String filter = null;
+            if (!grant.name().isEmpty()) filter = grant.name();
+                
             parameters[index] = filter(username, filter, parameters[index]);
         }
+        
+        return filtered;
     }
     
     Object filterResult(InvocationContext ctx, String username) throws Exception {
@@ -205,4 +194,45 @@ public class GuardInterceptor {
         
         return filter(username, null, result);
     }
+    
+    Grant getAction(final Grant resource, final Method method) {
+        Grant grant = method.getAnnotation(Grant.class);
+        if (grant != null) return createGrant(method.getName(), grant);
+        
+        for (Class<?> iclass : method.getDeclaringClass().getInterfaces()) {
+            try {
+                Method imethod = iclass.getMethod(method.getName(), method.getParameterTypes());
+                grant = imethod.getAnnotation(Grant.class);
+                if (grant != null) return createGrant(imethod.getName(), grant);
+            } catch (NoSuchMethodException e) { }
+        }
+        
+        return createGrant(method.getName(), true, resource.filter()); //inherit resource filter
+    }
+    
+    <T> String getFilterResource(Collection<T> collection) {
+        for (T element : collection) {
+            if (element == null) continue;
+            
+            Grant grant = getResource(element.getClass());
+            if (!grant.filter()) return null; 
+            
+            return grant.name();
+        }
+        
+        return null;
+    }
+
+    Grant getResource(final Class<?> clazz) {
+        Grant grant = clazz.getAnnotation(Grant.class);
+        if (grant != null) createGrant(clazz.getName(),grant);
+
+        for (Class<?> iclass : clazz.getInterfaces()) {
+            grant = iclass.getAnnotation(Grant.class);
+            if (grant != null) return createGrant(iclass.getName(), grant);
+        }
+
+        return createGrant(clazz.getName(), true, false);
+    }
+    
 }
