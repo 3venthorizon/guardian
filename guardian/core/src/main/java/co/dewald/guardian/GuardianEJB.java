@@ -127,7 +127,7 @@ public class GuardianEJB implements Guardian {
     @Override
     public Boolean checkState(@NotNull String resource, @NotNull String action) throws SecurityException {
         try {
-            Permission permission = realm.findPermissionBy(resource, action);
+            Permission permission = realm.loadPermission(resource, action);
            
             if (Boolean.TRUE.equals(permission.getActive())) return Boolean.TRUE;
             if (Boolean.TRUE.equals(permission.getBypass())) return Boolean.FALSE;

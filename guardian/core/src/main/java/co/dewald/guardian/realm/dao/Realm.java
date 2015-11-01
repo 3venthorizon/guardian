@@ -133,6 +133,21 @@ public class Realm implements RealmDAO {
         
         return permission;
     }
+    
+    //@formatter:off
+    @Override
+    public Permission loadPermission(String resource, String action) {
+        TypedQuery<Permission> query = em.createNamedQuery(Permission.QUERY, Permission.class);
+        List<Permission> permission = query.setParameter(Permission.PARAM_RESOURCE, resource)
+                                           .setParameter(Permission.PARAM_ACTION, action).getResultList();
+        
+        if (!permission.isEmpty()) return permission.get(0);
+        
+        Permission resourceAction = new Permission(resource, action, Boolean.TRUE, Boolean.FALSE);
+        create(resourceAction);
+        return resourceAction;
+    }
+    //@formatter:on
 
     @Override
     public <RE extends RealmEntity> void remove(RE realmEntity) {

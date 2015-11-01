@@ -111,6 +111,15 @@ public interface RealmDAO {
      * @return permission or null when it is not found.
      */
     Permission findPermissionBy(String resource, String action);
+    
+    /**
+     * Finds the Permission and return it. If no Permission is found create and return it.
+     *  
+     * @param resource
+     * @param action
+     * @return permission
+     */
+    Permission loadPermission(String resource, String action);
 
     /**
      * Removes the realm entity.
