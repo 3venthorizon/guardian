@@ -2,7 +2,6 @@ package co.dewald.guardian;
 
 
 import co.dewald.guardian.gate.Administration;
-import co.dewald.guardian.gate.Grant;
 import co.dewald.guardian.gate.Guard;
 import co.dewald.guardian.realm.Period;
 import co.dewald.guardian.realm.Permission;
@@ -28,7 +27,6 @@ import javax.validation.constraints.NotNull;
  * AdministratorEJB
  */
 @Guard
-@Grant(name = "Administration")
 @Stateless(name = "Bureaucrat")
 public class AdministratorEJB implements Administration {
     
