@@ -14,6 +14,9 @@ import co.dewald.guardian.realm.Permission;
 import co.dewald.guardian.realm.dao.RealmDAO;
 
 
+/**
+ * @author Dewald Pretorius
+ */
 @RunWith(MockitoJUnitRunner.class)
 public class GuardianCheckStateTest {
     
@@ -31,7 +34,7 @@ public class GuardianCheckStateTest {
 
     @Test(expected = SecurityException.class)
     public void permissionNotFound() {
-        when(realm.findPermissionBy(RESOURCE, ACTION)).thenThrow(new RuntimeException("Permission not found"));
+        when(realm.loadPermission(RESOURCE, ACTION)).thenThrow(new RuntimeException("Permission not found"));
         
         guardian.checkState(RESOURCE, ACTION);
     }
@@ -39,7 +42,7 @@ public class GuardianCheckStateTest {
     @Test
     public void active() {
         Permission permission = new Permission(RESOURCE, ACTION, Boolean.TRUE, Boolean.FALSE);
-        when(realm.findPermissionBy(RESOURCE, ACTION)).thenReturn(permission);
+        when(realm.loadPermission(RESOURCE, ACTION)).thenReturn(permission);
         
         Boolean state = guardian.checkState(RESOURCE, ACTION);
         
@@ -49,7 +52,7 @@ public class GuardianCheckStateTest {
     @Test
     public void bypassDeactive() {
         Permission permission = new Permission(RESOURCE, ACTION, Boolean.FALSE, Boolean.TRUE);
-        when(realm.findPermissionBy(RESOURCE, ACTION)).thenReturn(permission);
+        when(realm.loadPermission(RESOURCE, ACTION)).thenReturn(permission);
         
         Boolean state = guardian.checkState(RESOURCE, ACTION);
         
@@ -59,7 +62,7 @@ public class GuardianCheckStateTest {
     @Test(expected = SecurityException.class)
     public void deactive() {
         Permission permission = new Permission(RESOURCE, ACTION, Boolean.FALSE, Boolean.FALSE);
-        when(realm.findPermissionBy(RESOURCE, ACTION)).thenReturn(permission);
+        when(realm.loadPermission(RESOURCE, ACTION)).thenReturn(permission);
         
         guardian.checkState(RESOURCE, ACTION);
     }
