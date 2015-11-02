@@ -107,7 +107,7 @@ public class GuardianEJB implements Guardian {
         }
         
         DATA: for (Map.Entry<String, T> entry : data.entrySet()) {
-            if (!remove.isEmpty()) {
+            if (entry.getKey() != null && !remove.isEmpty()) {
                 Iterator<String> iterator = remove.iterator();
             
                 while (iterator.hasNext()) {
