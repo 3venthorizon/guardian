@@ -50,8 +50,9 @@ public class GuardInterceptor {
         
         filterMethodParameters(ctx, session.getUsername());
         
-        if (!(action.filter())) return ctx.proceed();
-        return filterResult(ctx, session.getUsername());
+        Object result = ctx.proceed();
+        if (action.filter() && result != null) filter(session.getUsername(), null, result);
+        return result;
     }
     
     void authorise(String username, String resource, String action) {
@@ -71,7 +72,7 @@ public class GuardInterceptor {
             @Override
             public String name() { return name; }
             @Override
-            public boolean check() {  return check; }
+            public boolean check() { return check; }
             @Override
             public boolean filter() { return filter; }
         };
@@ -188,13 +189,6 @@ public class GuardInterceptor {
         return filtered;
     }
     
-    Object filterResult(InvocationContext ctx, String username) throws Exception {
-        Object result = ctx.proceed();
-        if (result == null) return result;
-        
-        return filter(username, null, result);
-    }
-    
     Grant getAction(final Grant resource, final Method method) {
         Grant grant = method.getAnnotation(Grant.class);
         if (grant != null) return createGrant(method.getName(), grant);
@@ -234,5 +228,4 @@ public class GuardInterceptor {
 
         return createGrant(clazz.getName(), true, false);
     }
-    
 }
