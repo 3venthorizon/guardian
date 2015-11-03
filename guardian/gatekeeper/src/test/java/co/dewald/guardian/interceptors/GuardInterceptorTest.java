@@ -5,6 +5,7 @@ import static org.junit.Assert.*;
 import static org.mockito.Mockito.*;
 
 import java.io.Serializable;
+import java.lang.reflect.Method;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -57,6 +58,25 @@ public class GuardInterceptorTest {
     //@formatter:on
     
     @Test
+    public void getActionTestDefaultReflectionFilterInheritance() throws Exception {
+        Class<?> classMock = DefaultReflectionFilter.class;
+        Method method = classMock.getDeclaredMethod("inheritFilter", new Class<?>[0]);
+        Grant resource = interceptor.getResource(classMock);
+        
+        Grant grant = interceptor.getAction(resource, method);
+        
+        assertEquals("inheritFilter", grant.name());
+        assertTrue(grant.filter());
+        assertTrue(grant.check());
+        
+    }
+    
+    @Grant(filter = true)
+    class DefaultReflectionFilter {
+        private String inheritFilter() { return "Implicit Method Filter Inherited"; }
+    }
+    
+    @Test
     public void getResourceTestDefaultReflection() {
         Class<?> classMock = DefaultReflection.class;
         
@@ -73,6 +93,19 @@ public class GuardInterceptorTest {
     }
     
     @Test
+    public void getActionTestDirectAnnotation() throws Exception {
+        Class<?> classMock = DirectAnnotation.class;
+        Method method = classMock.getDeclaredMethod("action", new Class<?>[0]);
+        Grant resource = interceptor.getResource(classMock);
+        
+        Grant grant = interceptor.getAction(resource, method);
+        
+        assertEquals("action", grant.name());
+        assertFalse(grant.check());
+        assertFalse(grant.filter());
+    }
+    
+    @Test
     public void getResourceTestDirectAnnotation() {
         Class<?> classMock = DirectAnnotation.class;
         
@@ -83,7 +116,10 @@ public class GuardInterceptorTest {
     
     //@formatter:off
     @Grant(name = "DirectAnnotation")
-    class DirectAnnotation { }
+    class DirectAnnotation {
+        @Grant(check = false, filter = false)
+        void action() { }
+    }
     //@formatter:on
 
     @Test

@@ -155,7 +155,7 @@ public class GuardInterceptor {
         
         for (Class<?> iclass : method.getDeclaringClass().getInterfaces()) {
             try {
-                Method imethod = iclass.getMethod(method.getName(), method.getParameterTypes());
+                Method imethod = iclass.getDeclaredMethod(method.getName(), method.getParameterTypes());
                 filtered = filterParameters(username, imethod, ctx.getParameters());
                 if (filtered) return;
             } catch (NoSuchMethodException e) { }
@@ -195,7 +195,7 @@ public class GuardInterceptor {
         
         for (Class<?> iclass : method.getDeclaringClass().getInterfaces()) {
             try {
-                Method imethod = iclass.getMethod(method.getName(), method.getParameterTypes());
+                Method imethod = iclass.getDeclaredMethod(method.getName(), method.getParameterTypes());
                 grant = imethod.getAnnotation(Grant.class);
                 if (grant != null) return createGrant(imethod.getName(), grant);
             } catch (NoSuchMethodException e) { }
