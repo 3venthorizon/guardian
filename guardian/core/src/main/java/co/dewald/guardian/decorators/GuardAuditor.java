@@ -1,6 +1,7 @@
 package co.dewald.guardian.decorators;
 
 
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -29,78 +30,91 @@ public abstract class GuardAuditor implements Guardian {
     static final String ERROR_NULL_FILTER = "Filter Null";
     static final String ACTION_AUTHENTICATE = "authenticate";
     static final String ACTION_FILTER = "filter";
+    static final String BYPASSED = "Bypassed";
 
     @Inject @Delegate Guardian delegate;
     @EJB RealmDAO realm;
     
     @Override
     public Boolean authenticate(String username, String password) {
-        AccessLog event = new AccessLog();
+        Date timestamp = new Date();
+        boolean granted = false;
+        String message = null;
         
         try {
-            event.setResource(RESOURCE);
-            event.setAction(ACTION_AUTHENTICATE);
-            event.setUsername(username);
-
             Boolean authenticated = delegate.authenticate(username, password);
             
-            if (authenticated == null) event.setMessage(ERROR_NOSUBJECT);
-            else event.setGranted(authenticated);
+            if (authenticated == null) message = ERROR_NOSUBJECT;
+            else granted = authenticated.booleanValue();
             
             return authenticated;
         } catch(Throwable throwable) {
-            event.setMessage(throwable.getMessage());
+            message = throwable.getMessage();
             throw throwable;
         } finally {
-            realm.create(event);
+            logEvent(timestamp, username, RESOURCE, ACTION_AUTHENTICATE, granted, message);
         }
     }
 
     @Override
     public Boolean authorise(String username, String resource, String action) {
-        AccessLog event = new AccessLog();
+        Date timestamp = new Date();
+        boolean granted = false;
+        String message = null;
         
         try {
-            event.setResource(resource);
-            event.setAction(action);
-            event.setUsername(username);
-
             Boolean authorised = delegate.authorise(username, resource, action);
             
-            if (authorised == null) event.setMessage(ERROR);
-            else event.setGranted(authorised);
+            if (authorised == null) message = ERROR;
+            else granted = authorised.booleanValue();
             
             return authorised;
         } catch(Throwable throwable) {
-            event.setMessage(throwable.getMessage());
+            message = throwable.getMessage();
             throw throwable;
         } finally {
-            realm.create(event);
+            logEvent(timestamp, username, resource, action, granted, message);
         }
     }
     
     @Override
     public <T> List<T> filter(String username, String resource, Map<String, T> data) {
-        AccessLog event = new AccessLog();
+        Date timestamp = new Date();
+        boolean granted = false;
+        String message = null;
         
         try {
-            event.setResource(resource);
-            event.setAction(ACTION_FILTER);
-            event.setUsername(username);
-            
             List<T> filtered = delegate.filter(username, resource, data);
             
             if (filtered == null || data == null) {
-                event.setMessage(data == null ? ERROR_NULL_FILTER : ERROR);
-            } else if (filtered.size() == data.size()) event.setGranted(true);
-            else event.setMessage(data.size() + ERROR_FILTERED + filtered.size());
+                message = data == null ? ERROR_NULL_FILTER : ERROR;
+            } else if (filtered.size() == data.size()) granted = true;
+            else message = data.size() + ERROR_FILTERED + filtered.size();
             
             return filtered;
         } catch(Throwable throwable) {
-            event.setMessage(throwable.getMessage());
+            message = throwable.getMessage();
             throw throwable;
         } finally {
-            realm.create(event);
+            logEvent(timestamp, username, resource, ACTION_FILTER, granted, message);
         }
+    }
+    
+    @Override
+    public Boolean checkState(String resource, String action) throws SecurityException {
+        try {
+            Boolean state = delegate.checkState(resource, action);
+            if (!Boolean.TRUE.equals(state)) logEvent(new Date(), RESOURCE, resource, action, false, BYPASSED);
+            
+            return state;
+        } catch (SecurityException e) {
+            logEvent(new Date(), RESOURCE, resource, action, false, e.getMessage());
+            throw e;
+        }
+    }
+    
+    void logEvent(Date timestamp, String username, String resource, String action, boolean granted, String message) {
+        AccessLog event = new AccessLog(timestamp, username, resource, action, granted, message);
+        realm.create(event);
     }
 }
