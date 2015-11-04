@@ -6,6 +6,10 @@ import static org.mockito.Mockito.*;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -30,6 +34,48 @@ public class GuardInterceptorTest {
     GuardInterceptor interceptor;
     Session session;
     
+    //@formatter:off
+    
+    @Grant
+    class BlankGrantName {}
+
+    @Grant(filter = true)
+    class DefaultReflectionFilter {
+        @SuppressWarnings("unused")
+        private String inheritFilter() { return "Implicit Method Filter Inherited"; }
+    }
+
+    class DefaultReflection implements Serializable {
+        static final long serialVersionUID = -6208762122315325812L;
+    }
+
+    @Grant(name = "DirectAnnotation")
+    class DirectAnnotation {
+        @Grant(check = false, filter = false)
+        void action() { }
+    }
+
+    @Grant(name = "GuardInterfaceImplementation", filter = true)
+    interface InterfaceAnnotation {
+        @Grant(check = false)
+        String polymorphism();
+    }
+
+    interface InterfaceCollision {
+        String polymorphism();
+    }
+
+    class IndirectAnnotation implements Cloneable, Serializable, InterfaceCollision, InterfaceAnnotation {
+        static final long serialVersionUID = -5201589352513726415L;
+    
+        @Override
+        public String polymorphism() {
+            return "covered";
+        } 
+    }
+    
+    //@formatter:on
+
     @BeforeClass
     public static void setUpBeforeClass() throws Exception {
     }
@@ -52,11 +98,6 @@ public class GuardInterceptorTest {
         assertEquals("ClassName", substituted.name());
     }
 
-    //@formatter:off
-    @Grant
-    class BlankGrantName {}
-    //@formatter:on
-    
     @Test
     public void getActionTestDefaultReflectionFilterInheritance() throws Exception {
         Class<?> classMock = DefaultReflectionFilter.class;
@@ -71,11 +112,6 @@ public class GuardInterceptorTest {
         
     }
     
-    @Grant(filter = true)
-    class DefaultReflectionFilter {
-        private String inheritFilter() { return "Implicit Method Filter Inherited"; }
-    }
-    
     @Test
     public void getResourceTestDefaultReflection() {
         Class<?> classMock = DefaultReflection.class;
@@ -86,10 +122,6 @@ public class GuardInterceptorTest {
         assertEquals("co.dewald.guardian.interceptors.GuardInterceptorTest$DefaultReflection", grant.name());
         assertTrue(grant.check());
         assertFalse(grant.filter());
-    }
-    
-    class DefaultReflection implements Serializable {
-        static final long serialVersionUID = -6208762122315325812L;
     }
     
     @Test
@@ -114,26 +146,55 @@ public class GuardInterceptorTest {
         assertEquals("DirectAnnotation", grant.name());
     }
     
-    //@formatter:off
-    @Grant(name = "DirectAnnotation")
-    class DirectAnnotation {
-        @Grant(check = false, filter = false)
-        void action() { }
+    @Test
+    public void getActionTestAnnotatedInterface() throws Exception {
+        Class<?> classMock = IndirectAnnotation.class;
+        Method method = classMock.getDeclaredMethod("polymorphism", new Class<?>[0]);
+        Grant resource = interceptor.getResource(classMock);
+        
+        Grant grant = interceptor.getAction(resource, method);
+        
+        assertEquals("polymorphism", grant.name());
+        assertFalse(grant.check());
     }
-    //@formatter:on
 
     @Test
     public void getResourceTestAnnotatedInterface() {
         Class<?> classMock = IndirectAnnotation.class;
-        
+
         Grant grant = interceptor.getResource(classMock);
         
         assertEquals("GuardInterfaceImplementation", grant.name());
+        assertTrue(grant.filter());
     }
     
-    //@formatter:off
-    @Grant(name = "GuardInterfaceImplementation")
-    interface InterfaceAnnotation { }
-    class IndirectAnnotation implements InterfaceAnnotation { }
-    //@formatter:on
+    @SuppressWarnings("unchecked")
+    @Test
+    public void getFilterResourceTestEmptyCollection() {
+        String filterResource = interceptor.getFilterResource(Collections.EMPTY_SET);
+        
+        assertNull(filterResource);
+    }
+    
+    @Test
+    public void getFilterResourceTestNoFilter() {
+        List<String> collection = Arrays.asList("Not", "Annotated", "filter == false");
+        
+        String filterResource = interceptor.getFilterResource(collection);
+        
+        assertNull(filterResource);
+    }
+    
+    @Test
+    public void getFilterResourceTestIndirectAnnotationFilter() {
+        List<IndirectAnnotation> collection = new ArrayList<>(); 
+        collection.add(new IndirectAnnotation());
+        collection.add(null);
+        collection.add(new IndirectAnnotation());
+        
+        String filterResource = interceptor.getFilterResource(collection);
+        
+        assertNotNull(filterResource);
+        assertEquals("GuardInterfaceImplementation", filterResource);
+    }
 }
