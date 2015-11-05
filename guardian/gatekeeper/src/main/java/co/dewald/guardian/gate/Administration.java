@@ -20,7 +20,6 @@ public interface Administration {
      * @param username
      * @param password
      */
-    @Grant(check = false)
     void registerSubject(String username, String password);
     
     /**
