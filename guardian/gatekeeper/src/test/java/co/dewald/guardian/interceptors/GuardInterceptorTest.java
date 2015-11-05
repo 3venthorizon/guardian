@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+
 import org.junit.Before;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -29,6 +30,10 @@ import co.dewald.guardian.gate.Session;
  */
 @RunWith(MockitoJUnitRunner.class)
 public class GuardInterceptorTest {
+    
+    static final String USER = "subject";
+    static final String RESOURCE = "resource";
+    static final String ACTION = "action";
 
     @Mock Guardian guardian;
     GuardInterceptor interceptor;
@@ -87,6 +92,20 @@ public class GuardInterceptorTest {
     }
     
     @Test
+    public void authoriseTestPass() {
+        when(guardian.authorise(USER, RESOURCE, ACTION)).thenReturn(Boolean.TRUE);
+        
+        interceptor.authorise(USER, RESOURCE, ACTION);
+    }
+    
+    @Test(expected = SecurityException.class)
+    public void authoriseTestFalse() throws SecurityException {
+        when(guardian.authorise(USER, RESOURCE, ACTION)).thenReturn(Boolean.FALSE);
+        
+        interceptor.authorise(USER, RESOURCE, ACTION);
+    }
+    
+    @Test
     public void createGrantTestNameSubstitution() {
         Grant grant = BlankGrantName.class.getAnnotation(Grant.class);
         assertNotNull(grant);
@@ -109,7 +128,6 @@ public class GuardInterceptorTest {
         assertEquals("inheritFilter", grant.name());
         assertTrue(grant.filter());
         assertTrue(grant.check());
-        
     }
     
     @Test
