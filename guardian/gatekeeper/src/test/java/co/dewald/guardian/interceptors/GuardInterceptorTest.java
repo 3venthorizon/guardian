@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import javax.interceptor.InvocationContext;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -214,5 +215,83 @@ public class GuardInterceptorTest {
         
         assertNotNull(filterResource);
         assertEquals("GuardInterfaceImplementation", filterResource);
+    }
+
+    @Test
+    public void filterMethodParametersTestEmpty() throws Exception {
+        InvocationContext ctxMock = mock(InvocationContext.class);
+        when(ctxMock.getParameters()).thenReturn(null);
+
+        interceptor.filterMethodParameters(ctxMock, USER);
+        verify(ctxMock, only()).getParameters();
+
+        reset(ctxMock);
+        when(ctxMock.getParameters()).thenReturn(new Object[0]);
+
+        interceptor.filterMethodParameters(ctxMock, USER);
+        verify(ctxMock, only()).getParameters();
+    }
+
+    @Test
+    public void filterMethodParametersTestFilterParametersDone() throws Exception {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        InvocationContext ctxMock = mock(InvocationContext.class);
+        
+        Object[] parameters = { "method", "parameter", null, Collections.EMPTY_MAP };
+        Method method = DirectAnnotation.class.getDeclaredMethod("action", new Class<?>[0]);        
+
+        when(ctxMock.getParameters()).thenReturn(parameters);
+        when(ctxMock.getMethod()).thenReturn(method);
+        doReturn(true).when(interceptorSpy).filterParameters(USER, method, parameters);
+        
+        interceptorSpy.filterMethodParameters(ctxMock, USER);
+        
+        verify(ctxMock, times(1)).getParameters();
+        verify(ctxMock, times(1)).getMethod();
+        verify(interceptorSpy, times(1)).filterParameters(USER, method, parameters);
+    }
+    
+    @Test
+    public void filterMethodParametersTestNoParameterAnnotations() throws Exception {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        InvocationContext ctxMock = mock(InvocationContext.class);
+        
+        Object[] parameters = { "method", "parameter", null, Collections.EMPTY_MAP };
+        Method method = DirectAnnotation.class.getDeclaredMethod("action", new Class<?>[0]);   
+        
+        when(ctxMock.getParameters()).thenReturn(parameters);
+        when(ctxMock.getMethod()).thenReturn(method);
+        doReturn(false).when(interceptorSpy).filterParameters(USER, method, parameters);
+        
+        interceptorSpy.filterMethodParameters(ctxMock, USER);
+        
+        verify(ctxMock, times(1)).getParameters();
+        verify(ctxMock, times(1)).getMethod();
+        verify(interceptorSpy, times(1)).filterParameters(USER, method, parameters);
+    }
+    
+    @Test
+    public void filterMethodParametersTestIndirectMethodParameterAnnotations() throws Exception {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        InvocationContext ctxMock = mock(InvocationContext.class);
+        
+        Object[] parameters = { "method", "parameter", null, Collections.EMPTY_MAP };
+        Method method = IndirectAnnotation.class.getDeclaredMethod("polymorphism", new Class<?>[0]);   
+        Method icollision = InterfaceCollision.class.getDeclaredMethod("polymorphism", new Class<?>[0]);
+        Method imethod = InterfaceAnnotation.class.getDeclaredMethod("polymorphism", new Class<?>[0]);
+        
+        when(ctxMock.getParameters()).thenReturn(parameters);
+        when(ctxMock.getMethod()).thenReturn(method);
+        doReturn(false).when(interceptorSpy).filterParameters(USER, method, parameters);
+        doReturn(false).when(interceptorSpy).filterParameters(USER, icollision, parameters);
+        doReturn(true).when(interceptorSpy).filterParameters(USER, imethod, parameters);
+        
+        interceptorSpy.filterMethodParameters(ctxMock, USER);
+        
+        verify(ctxMock, times(1)).getParameters();
+        verify(ctxMock, times(1)).getMethod();
+        verify(interceptorSpy, times(1)).filterParameters(USER, method, parameters);
+        verify(interceptorSpy, times(1)).filterParameters(USER, icollision, parameters);
+        verify(interceptorSpy, times(1)).filterParameters(USER, imethod, parameters);
     }
 }

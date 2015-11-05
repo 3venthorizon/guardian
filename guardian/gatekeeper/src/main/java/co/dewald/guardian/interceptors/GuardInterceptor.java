@@ -148,15 +148,15 @@ public class GuardInterceptor {
         Object[] parameters = ctx.getParameters();
         if (parameters == null || parameters.length < 1) return;
         
-        boolean filtered = filterParameters(username, ctx.getMethod(), ctx.getParameters());
-        if (filtered) return;
-        
         Method method = ctx.getMethod();
+        boolean filtered = filterParameters(username, method, parameters);
+
+        if (filtered) return;
         
         for (Class<?> iclass : method.getDeclaringClass().getInterfaces()) {
             try {
                 Method imethod = iclass.getDeclaredMethod(method.getName(), method.getParameterTypes());
-                filtered = filterParameters(username, imethod, ctx.getParameters());
+                filtered = filterParameters(username, imethod, parameters);
                 if (filtered) return;
             } catch (NoSuchMethodException e) { }
         }
