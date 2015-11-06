@@ -125,20 +125,19 @@ public class GuardInterceptor {
         if (resource == null) resource = getFilterResource(collection);
         if (resource == null) return; //data filter name/type undefined
         
-        Map<String, T> tuple = new LinkedHashMap<>(collection.size()); 
-        boolean recursive = false;
+        Map<String, T> filterMap = new LinkedHashMap<>(collection.size()); 
+        List<T> recursiveElements = new ArrayList<>(collection.size()); 
         
         for (T element : collection) {
-            if (element == null) tuple.put(null, element);
+            if (element == null) filterMap.put(null, null);
             else if (element instanceof Collection || element instanceof Map) {
-                recursive = true;
-                filter(username, resource, element); //recursive: call the caller
-            } else tuple.put(element.toString(), element);
+                filter(username, resource, element); 
+                recursiveElements.add(element);
+            } else filterMap.put(element.toString(), element);
         }
         
-        if (recursive) return;
-        
-        List<T> filtered = guardian.filter(username, resource, tuple);
+        List<T> filtered = guardian.filter(username, resource, filterMap);
+        filtered.addAll(recursiveElements);
         
         if (filtered == null || filtered.isEmpty()) collection.clear();
         else collection.retainAll(filtered);
