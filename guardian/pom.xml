@@ -23,7 +23,7 @@
 		<dependency-plugin-version>2.10</dependency-plugin-version>
 		<compiler-plugin-version>3.3</compiler-plugin-version>
 		<failsafe-plugin-version>2.18.1</failsafe-plugin-version>
-		<jacoco-plugin-version>0.7.4.201502262128</jacoco-plugin-version>
+		<jacoco-plugin-version>0.7.5.201505241946</jacoco-plugin-version>
 
 		<!-- dependency versions -->
 		<javaee-api-version>7.0</javaee-api-version>

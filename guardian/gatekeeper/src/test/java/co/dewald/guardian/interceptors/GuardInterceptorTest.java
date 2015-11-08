@@ -8,9 +8,11 @@ import java.io.Serializable;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import javax.faces.model.CollectionDataModel;
 import javax.interceptor.InvocationContext;
 
 import org.junit.Before;
@@ -293,5 +295,43 @@ public class GuardInterceptorTest {
         verify(interceptorSpy, times(1)).filterParameters(USER, method, parameters);
         verify(interceptorSpy, times(1)).filterParameters(USER, icollision, parameters);
         verify(interceptorSpy, times(1)).filterParameters(USER, imethod, parameters);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void filterCollectionTestNullEmptyCollection() {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        Collection<?> collecionMock = mock(Collection.class);
+        
+        when(collecionMock.isEmpty()).thenReturn(true);
+        
+        interceptorSpy.filterCollection(USER, RESOURCE, collecionMock);
+        
+        verify(collecionMock, only()).isEmpty();
+        verify(interceptorSpy, never()).getFilterResource(anyCollection());
+        verify(guardian, never()).filter(anyString(), anyString(), anyMap());
+        
+        
+        reset(interceptorSpy, collecionMock, guardian);
+        
+        interceptorSpy.filterCollection(USER, RESOURCE, null);
+        
+        verify(interceptorSpy, never()).getFilterResource(anyCollection());
+        verify(guardian, never()).filter(anyString(), anyString(), anyMap());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void filterCollectionTestFilterResourceFalse() {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        Collection<?> collecionMock = mock(Collection.class);
+        
+        when(collecionMock.isEmpty()).thenReturn(false);
+        doReturn(null).when(interceptorSpy).getFilterResource(collecionMock);
+        
+        interceptorSpy.filterCollection(USER, null, collecionMock);
+        
+        verify(collecionMock, only()).isEmpty();
+        verify(interceptorSpy, times(1)).getFilterResource(collecionMock);
     }
 }
