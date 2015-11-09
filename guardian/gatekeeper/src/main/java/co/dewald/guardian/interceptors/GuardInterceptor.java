@@ -120,6 +120,7 @@ public class GuardInterceptor {
         return collection;
     }
     
+    @SuppressWarnings("unchecked")
     <T> void filterCollection(String username, String resource, Collection<T> collection) {  
         if (collection == null || collection.isEmpty()) return;
         if (resource == null) resource = getFilterResource(collection);
@@ -127,12 +128,14 @@ public class GuardInterceptor {
         
         Map<String, T> filterMap = new LinkedHashMap<>(collection.size()); 
         List<T> recursiveElements = new ArrayList<>(collection.size()); 
+        boolean substituted = false; 
         
         for (T element : collection) {
             if (element == null) filterMap.put(null, null);
             else if (element instanceof Collection || element instanceof Map) {
-                filter(username, resource, element); 
-                recursiveElements.add(element);
+                Object mutableElement = filter(username, resource, element); 
+                recursiveElements.add((T) mutableElement);
+                substituted |= element != mutableElement;
             } else filterMap.put(element.toString(), element);
         }
         
@@ -140,7 +143,14 @@ public class GuardInterceptor {
         filtered.addAll(recursiveElements);
         
         if (filtered == null || filtered.isEmpty()) collection.clear();
-        else collection.retainAll(filtered);
+        else {
+            collection.retainAll(filtered);
+            
+            if (substituted) {
+                recursiveElements.removeAll(collection);
+                collection.addAll(recursiveElements);
+            }
+        }
     }
     
     void filterMethodParameters(InvocationContext ctx, String username) {
