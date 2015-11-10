@@ -51,7 +51,7 @@ public class GuardInterceptor {
         filterMethodParameters(ctx, session.getUsername());
         
         Object result = ctx.proceed();
-        if (action.filter() && result != null) filter(session.getUsername(), null, result);
+        if (action.filter() && result != null) result = filter(session.getUsername(), null, result);
         return result;
     }
     
