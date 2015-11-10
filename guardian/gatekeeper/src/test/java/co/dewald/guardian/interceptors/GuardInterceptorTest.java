@@ -298,6 +298,23 @@ public class GuardInterceptorTest {
         verify(interceptorSpy).filterMethodParameters(ctxMock, USER);
         verify(interceptorSpy).filter(USER, null, "Result");
     }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Test
+    public void filterTestMap() {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        Map mapMock = mock(Map.class);
+        
+        when(mapMock.keySet()).thenReturn(Collections.EMPTY_SET);
+        when(mapMock.values()).thenReturn(Collections.EMPTY_LIST);
+        doNothing().when(interceptorSpy).filterCollection(anyString(), anyString(), anyCollection());
+        
+        Object result = interceptorSpy.filter(USER, RESOURCE, mapMock);
+        
+        assertEquals(mapMock, result);
+        verify(interceptorSpy, times(1)).filterCollection(USER, RESOURCE, Collections.EMPTY_SET);
+        verify(interceptorSpy, times(1)).filterCollection(USER, RESOURCE, Collections.EMPTY_LIST);
+    }
 
     @Test
     public void filterMethodParametersTestEmpty() throws Exception {
