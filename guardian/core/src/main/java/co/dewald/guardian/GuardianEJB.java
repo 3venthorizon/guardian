@@ -103,7 +103,7 @@ public class GuardianEJB implements Guardian {
                 }
             }
         } catch (Exception e) {
-            return null;
+            throw new SecurityException(e);
         }
         
         DATA: for (Map.Entry<String, T> entry : data.entrySet()) {
