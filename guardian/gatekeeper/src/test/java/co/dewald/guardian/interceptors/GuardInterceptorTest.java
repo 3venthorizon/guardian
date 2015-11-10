@@ -92,7 +92,11 @@ public class GuardInterceptorTest {
     @Before
     public void setUp() throws Exception {
         interceptor = new GuardInterceptor();
+        session = new Session();
+        session.setUsername(USER);
+        
         interceptor.guardian = guardian;
+        interceptor.session = session;
     }
     
     @Test
@@ -218,6 +222,81 @@ public class GuardInterceptorTest {
         
         assertNotNull(filterResource);
         assertEquals("GuardInterfaceImplementation", filterResource);
+    }
+    
+    @Test
+    public void grantTestBypass() throws Exception {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        InvocationContext ctxMock = mock(InvocationContext.class);
+        Method method = DirectAnnotation.class.getDeclaredMethod("action", new Class<?>[0]);   
+        
+        when(ctxMock.getMethod()).thenReturn(method);
+        when(guardian.checkState(anyString(), anyString())).thenReturn(Boolean.FALSE);
+        
+        Object result = interceptorSpy.grant(ctxMock);
+        
+        assertNull(result);
+        verify(guardian, only()).checkState("DirectAnnotation", "action");
+        verify(ctxMock, only()).getMethod();
+    }
+    
+    @Test
+    public void grantTestDisabled() throws Exception {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        InvocationContext ctxMock = mock(InvocationContext.class);
+        Method method = DirectAnnotation.class.getDeclaredMethod("action", new Class<?>[0]);   
+        
+        when(ctxMock.getMethod()).thenReturn(method);
+        when(guardian.checkState(anyString(), anyString())).thenThrow(new SecurityException());
+        
+        try {
+            interceptorSpy.grant(ctxMock);
+            fail("The disabled resource should throw a SecurityException");
+        } catch (SecurityException e) { 
+        }
+        
+        verify(guardian, only()).checkState("DirectAnnotation", "action");
+        verify(ctxMock, only()).getMethod();
+    }
+    
+    @Test
+    public void grantTestCheckAuthFalse() throws Exception {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        InvocationContext ctxMock = mock(InvocationContext.class);
+        Method method = DirectAnnotation.class.getDeclaredMethod("action", new Class<?>[0]);   
+        
+        when(ctxMock.getMethod()).thenReturn(method);
+        when(ctxMock.proceed()).thenReturn("Result");
+        when(guardian.checkState(anyString(), anyString())).thenReturn(Boolean.TRUE);
+        
+        Object result = interceptorSpy.grant(ctxMock);
+        
+        assertEquals("Result", result);
+        verify(ctxMock, times(1)).proceed();
+        verify(guardian, only()).checkState("DirectAnnotation", "action");
+    }
+    
+    @Test
+    public void grantTestAuthoriseFilterSuccess() throws Exception {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        InvocationContext ctxMock = mock(InvocationContext.class);
+        Method method = DefaultReflectionFilter.class.getDeclaredMethod("inheritFilter", new Class<?>[0]);
+        
+        when(ctxMock.getMethod()).thenReturn(method);
+        when(ctxMock.proceed()).thenReturn("Result");
+        when(guardian.checkState(anyString(), anyString())).thenReturn(Boolean.TRUE);
+        doNothing().when(interceptorSpy).authorise(anyString(), anyString(), anyString());
+        doNothing().when(interceptorSpy).filterMethodParameters(any(InvocationContext.class), anyString());
+        doReturn("Override").when(interceptorSpy).filter(anyString(), anyString(), anyObject());
+        
+        Object result = interceptorSpy.grant(ctxMock);
+        
+        assertEquals("Override", result);
+        verify(ctxMock, times(1)).proceed();
+        verify(guardian, only()).checkState(DefaultReflectionFilter.class.getName(), "inheritFilter");
+        verify(interceptorSpy).authorise(USER, DefaultReflectionFilter.class.getName(), "inheritFilter");
+        verify(interceptorSpy).filterMethodParameters(ctxMock, USER);
+        verify(interceptorSpy).filter(USER, null, "Result");
     }
 
     @Test
