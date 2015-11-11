@@ -6,6 +6,7 @@ import static org.mockito.Mockito.*;
 
 import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -13,6 +14,7 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.interceptor.InvocationContext;
 
@@ -314,6 +316,91 @@ public class GuardInterceptorTest {
         assertEquals(mapMock, result);
         verify(interceptorSpy, times(1)).filterCollection(USER, RESOURCE, Collections.EMPTY_SET);
         verify(interceptorSpy, times(1)).filterCollection(USER, RESOURCE, Collections.EMPTY_LIST);
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void filterTestNonCollection() {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        
+        doNothing().when(interceptorSpy).filterCollection(anyString(), anyString(), anyCollection());
+        
+        Object result = interceptorSpy.filter(USER, RESOURCE, null);
+        
+        assertNull(result);
+        verify(interceptorSpy).filterCollection(eq(USER), eq(RESOURCE), anyCollection());
+        
+        reset(interceptorSpy);
+        
+        doNothing().when(interceptorSpy).filterCollection(anyString(), anyString(), anyCollection());
+        
+        result = interceptorSpy.filter(USER, RESOURCE, "Result");
+        
+        assertEquals("Result", result);
+        verify(interceptorSpy).filterCollection(eq(USER), eq(RESOURCE), anyCollection());
+    }
+    
+    @SuppressWarnings("unchecked")
+    @Test
+    public void filterTestCollection() {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        
+        doNothing().when(interceptorSpy).filterCollection(anyString(), anyString(), anyCollection());
+        
+        Object result = interceptorSpy.filter(USER, RESOURCE, Collections.EMPTY_SET);
+        
+        assertEquals(Collections.EMPTY_SET, result);
+        verify(interceptorSpy).filterCollection(USER, RESOURCE, Collections.EMPTY_SET);
+    }
+    
+    @SuppressWarnings({"unchecked", "rawtypes"})
+    @Test
+    public void filterTestImmutableCollections() {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        Collection<String> immutableCollection = Collections.EMPTY_LIST;
+        
+        doThrow(UnsupportedOperationException.class)
+            .doNothing()
+            .when(interceptorSpy).filterCollection(USER, RESOURCE, Collections.EMPTY_LIST);
+        
+        Object result = interceptorSpy.filter(USER, RESOURCE, immutableCollection);
+        
+        assertNotNull(result);
+        assertFalse(result == immutableCollection);
+        assertTrue(result instanceof List);
+        Collection collection = (Collection) result;
+        assertTrue(collection.containsAll(immutableCollection));
+        
+        
+        reset(interceptorSpy);
+        
+        doThrow(UnsupportedOperationException.class)
+            .doNothing()
+            .when(interceptorSpy).filterCollection(USER, RESOURCE, Collections.EMPTY_SET);
+        
+        immutableCollection = Collections.EMPTY_SET;
+        
+        result = interceptorSpy.filter(USER, RESOURCE, immutableCollection);
+        
+        assertNotNull(result);
+        assertFalse(result == immutableCollection);
+        assertTrue(result instanceof Set);
+        collection = (Collection) result;
+        assertTrue(collection.containsAll(immutableCollection));
+        
+        
+        reset(interceptorSpy);
+        
+        immutableCollection = Collections.unmodifiableCollection(new ArrayDeque());
+        
+        doThrow(UnsupportedOperationException.class)
+            .when(interceptorSpy).filterCollection(USER, RESOURCE, immutableCollection);
+        
+        try {
+            result = interceptorSpy.filter(USER, RESOURCE, immutableCollection);
+            fail();
+        } catch (UnsupportedOperationException e) {
+        }
     }
 
     @Test
