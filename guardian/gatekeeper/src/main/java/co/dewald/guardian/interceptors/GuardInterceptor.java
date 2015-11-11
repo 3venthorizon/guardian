@@ -114,7 +114,6 @@ public class GuardInterceptor {
             else throw uoe;
             
             filterCollection(username, filter, collection);
-            return collection;
         }
 
         return collection;
