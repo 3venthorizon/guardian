@@ -79,11 +79,9 @@ public class GuardianFilterTest {
         passEvaluate();
     }
     
-    @Test
+    @Test(expected = SecurityException.class)
     public void faultTest() {
-        List<String> list = guardian.filter(USERNAME, RESOURCE, map);
-        
-        assertNull(list);
+        guardian.filter(USERNAME, RESOURCE, map);
     }
     
     @Test
