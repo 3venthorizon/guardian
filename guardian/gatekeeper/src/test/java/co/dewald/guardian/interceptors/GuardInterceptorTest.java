@@ -17,6 +17,9 @@ import java.util.Map;
 import java.util.Set;
 
 import javax.interceptor.InvocationContext;
+import javax.jws.WebParam;
+import javax.validation.constraints.NotNull;
+import javax.validation.constraints.Size;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
@@ -83,6 +86,16 @@ public class GuardInterceptorTest {
         public String polymorphism() {
             return "covered";
         } 
+    }
+    
+    interface OtherParameterAnnotation {
+        void filter(@NotNull String notNull, String nullable, @WebParam(name = "count") Integer soapParam);
+    }
+    
+    interface GrantParameterAnnotation {
+        void filter(@Grant(name = "Guardian", filter = true) String notNull, 
+                    @Grant(filter = false) Integer soapParam,
+                    @Grant(filter = true) String noName);
     }
     
     //@formatter:on
@@ -552,5 +565,46 @@ public class GuardInterceptorTest {
         assertTrue(mixedCollection.contains(Collections.EMPTY_SET));
         verify(guardian, only()).filter(anyString(), anyString(), anyMap());
         verify(interceptorSpy, times(3)).filter(anyString(), anyString(), anyObject());
+    }
+    
+    @Test
+    public void filterParametersTestNoParameters() throws Exception {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        Class<?> classMock = IndirectAnnotation.class;
+        Method method = classMock.getDeclaredMethod("polymorphism", new Class<?>[0]);
+        
+        boolean filtered = interceptorSpy.filterParameters(USER, method, new Class<?>[0]);
+        
+        assertFalse(filtered);
+        verify(interceptorSpy, only()).filterParameters(eq(USER), eq(method), eq(new Class<?>[0]));
+    }
+    
+    @Test
+    public void filterParametersTestNullGrant() throws Exception {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        Class<?>[] parameters = {String.class, String.class, Integer.class};
+        Object[] data = new Object[] {"Not Null", null, new Integer(3)};
+        Method method = OtherParameterAnnotation.class.getDeclaredMethod("filter", parameters);
+        
+        boolean filtered = interceptorSpy.filterParameters(USER, method, data);
+        
+        assertFalse(filtered);
+        verify(interceptorSpy, times(1)).filterParameters(eq(USER), eq(method), eq(data));
+    }
+    
+    @Test
+    public void filterParametersTestGrant() throws Exception {
+        GuardInterceptor interceptorSpy = spy(interceptor);
+        Class<?>[] parameters = {String.class, Integer.class, String.class};
+        Object[] data = new Object[] {"Filtered", new Integer(-1), "No Name"};
+        Method method = GrantParameterAnnotation.class.getDeclaredMethod("filter", parameters);
+        
+        doReturn("first").doReturn("last").when(interceptorSpy).filter(anyString(), anyString(), any());
+        
+        boolean filtered = interceptorSpy.filterParameters(USER, method, data);
+        
+        assertTrue(filtered);
+        verify(interceptorSpy, times(1)).filter(eq(USER), eq((String) null), eq("No Name"));
+        verify(interceptorSpy, times(1)).filter(eq(USER), eq("Guardian"), eq("Filtered"));
     }
 }
