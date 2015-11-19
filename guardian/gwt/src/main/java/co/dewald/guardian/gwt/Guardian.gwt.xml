@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE module PUBLIC "-//Google Inc.//DTD Google Web Toolkit 2.6.1//EN" "http://google-web-toolkit.googlecode.com/svn/tags/2.6.1/distro-source/core/src/gwt-module.dtd">
+<module rename-to='guardian'>
+	<!-- Inherit the core Web Toolkit stuff. -->
+	<inherits name='com.google.gwt.user.User' />
+	<inherits name="com.google.gwt.json.JSON" />
+
+	<!-- Other module inherits -->
+	<inherits name="com.smartgwt.SmartGwt" />
+	<inherits name="com.smartgwt.tools.SmartGwtTools" />
+	<inherits name="com.smartgwt.SmartGwtNoTheme" />
+
+	<!-- Specify the app entry point class. -->
+	<entry-point class='co.dewald.guardian.gwt.ui.Guardian' />
+
+	<!-- Specify the paths for translatable code -->
+	<source path='ui' />
+	<source path='rpc' />
+	<source path='shared' />
+</module>

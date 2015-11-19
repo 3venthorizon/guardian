@@ -6,12 +6,12 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.dewald</groupId>
 	<artifactId>guardian</artifactId>
-	<version>0.0.8</version>
+	<version>0.0.A</version>
 	<packaging>pom</packaging>
 	<name>guardian</name>
 
 	<properties>
-	    <guardian-version>0.0.8</guardian-version>
+	    <guardian-version>0.0.A</guardian-version>
 		<!-- encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--java version -->
@@ -197,6 +197,7 @@
 		<module>gatekeeper</module>
 		<module>core</module>
 		<module>web</module>
+		<module>gwt</module>
 		<module>ear</module>
 	</modules>
 </project>

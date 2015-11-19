@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>co.dewald</groupId>
 		<artifactId>guardian</artifactId>
-		<version>0.0.8</version>
+		<version>0.0.A</version>
 	</parent>
 	<artifactId>guardian-ear</artifactId>
 	<packaging>ear</packaging>
@@ -30,6 +30,11 @@
 							<artifactId>guardian-web</artifactId>
 							<contextRoot>/guardian</contextRoot>
 						</webModule>
+						<webModule>
+                            <groupId>co.dewald</groupId>
+                            <artifactId>guardian-gwt</artifactId>
+                            <contextRoot>/guardian-gwt</contextRoot>
+                        </webModule>
 					</modules>
 				</configuration>
 			</plugin>
@@ -49,5 +54,11 @@
 			<version>${guardian-version}</version>
 			<type>war</type>
 		</dependency>
+		<dependency>
+            <groupId>co.dewald</groupId>
+            <artifactId>guardian-gwt</artifactId>
+            <version>${guardian-version}</version>
+            <type>war</type>
+        </dependency>
 	</dependencies>
 </project>

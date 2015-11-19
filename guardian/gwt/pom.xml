@@ -7,11 +7,11 @@
 	<parent>
 		<artifactId>guardian</artifactId>
 		<groupId>co.dewald</groupId>
-		<version>0.0.8</version>
+		<version>0.0.A</version>
 	</parent>
 	<artifactId>guardian-gwt</artifactId>
 	<packaging>war</packaging>
-	<name>gwt-admin</name>
+	<name>gwt</name>
 
 	<build>
 		<plugins>
@@ -35,14 +35,20 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <runTarget>index.html</runTarget>
+                
+                    <runTarget>Guardian.html</runTarget>
                 </configuration>
             </plugin>
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-war-plugin</artifactId>
 				 <configuration>
-                    <warName>Guardian</warName>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                        </manifest> 
+                    </archive>
                 </configuration>
 			</plugin>
 		</plugins>
@@ -57,6 +63,7 @@
 			<groupId>co.dewald</groupId>
 			<artifactId>guardian-gatekeeper</artifactId>
 			<version>${guardian-version}</version>
+			<scope>provided</scope>
 		</dependency>
 		<dependency>
 			<groupId>junit</groupId>
