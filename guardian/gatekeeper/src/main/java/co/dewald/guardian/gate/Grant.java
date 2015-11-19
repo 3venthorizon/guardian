@@ -13,12 +13,6 @@ import java.util.Collection;
 
 
 /**
- * Mark resource-actions and grant access from granular to fine:
- * <ul>
- *     <li>Resource: Class</li>
- *     <li>Action: Method</li>
- *     <li>Filter: Parameter</li>
- * </ul>
  * @author Dewald Pretorius
  */
 @Inherited
@@ -41,4 +35,9 @@ public @interface Grant {
      * The {@link Collection} or return object will be culled. 
      */
     boolean filter() default false;
+    
+    /**
+     * Relay the subsequent authorisations further down the current call stack position to the delegated user.
+     */
+    String relayUser() default "";
 }

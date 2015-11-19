@@ -50,7 +50,7 @@ public class GuardInterceptor {
         
         filterMethodParameters(ctx, session.getUsername());
         
-        Object result = ctx.proceed();
+        Object result = relayUser(ctx, resource, action);
         if (action.filter() && result != null) result = filter(session.getUsername(), null, result);
         return result;
     }
@@ -63,7 +63,7 @@ public class GuardInterceptor {
         }
     }
     
-    Grant createGrant(final String name, final boolean check, final boolean filter) {
+    Grant createGrant(final String name, final boolean check, final boolean filter, final String relayUser) {
         //@formatter:off
         Grant grant = new Grant() {
             @Override
@@ -75,6 +75,8 @@ public class GuardInterceptor {
             public boolean check() { return check; }
             @Override
             public boolean filter() { return filter; }
+            @Override
+            public String relayUser() { return relayUser; }
         };
         //@formatter:on
         
@@ -83,7 +85,7 @@ public class GuardInterceptor {
     
     Grant createGrant(String reflectName, Grant annotated) {
         if (!annotated.name().isEmpty()) return annotated;
-        return createGrant(reflectName, annotated.check(), annotated.filter());
+        return createGrant(reflectName, annotated.check(), annotated.filter(), annotated.relayUser());
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
@@ -209,7 +211,7 @@ public class GuardInterceptor {
             } catch (NoSuchMethodException e) { }
         }
         
-        return createGrant(method.getName(), true, resource.filter()); //inherit resource filter
+        return createGrant(method.getName(), true, resource.filter(), ""); //inherit resource filter
     }
     
     <T> String getFilterResource(Collection<T> collection) {
@@ -234,6 +236,22 @@ public class GuardInterceptor {
             if (grant != null) return createGrant(iclass.getName(), grant);
         }
 
-        return createGrant(clazz.getName(), true, false);
+        return createGrant(clazz.getName(), true, false, "");
+    }
+    
+    Object relayUser(InvocationContext ctx, Grant resource, Grant action) throws Exception {
+        String username = session.getUsername();
+        String delegate = username;
+        
+        try {
+            if (!action.relayUser().isEmpty()) delegate = action.relayUser();
+            else if (!resource.relayUser().isEmpty()) delegate = resource.relayUser();
+            
+            session.setUsername(delegate);
+            
+            return ctx.proceed();
+        } finally {
+            session.setUsername(username);
+        }
     }
 }

@@ -19,7 +19,6 @@ import java.util.Set;
 import javax.interceptor.InvocationContext;
 import javax.jws.WebParam;
 import javax.validation.constraints.NotNull;
-import javax.validation.constraints.Size;
 
 import org.junit.Before;
 import org.junit.BeforeClass;
