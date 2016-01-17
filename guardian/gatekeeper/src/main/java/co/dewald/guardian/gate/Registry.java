@@ -26,6 +26,7 @@ public class Registry {
     }
     
     public Session getSession(String token) {
+        //TODO check the audit log for the distributed session
         return registry.get(token);
     }
     
