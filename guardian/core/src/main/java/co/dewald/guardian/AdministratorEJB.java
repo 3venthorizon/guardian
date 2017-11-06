@@ -3,7 +3,6 @@ package co.dewald.guardian;
 
 import co.dewald.guardian.gate.Administration;
 import co.dewald.guardian.gate.Guard;
-import co.dewald.guardian.realm.Period;
 import co.dewald.guardian.realm.Permission;
 import co.dewald.guardian.realm.Role;
 import co.dewald.guardian.realm.Subject;
@@ -89,13 +88,8 @@ public class AdministratorEJB implements Administration {
      * @see Administration#registerRole(String, Integer, Integer, Integer)
      */
     @Override
-    public void registerRole(@NotNull String group, Integer calendarField, Integer start, Integer end) {
-        Role role = new Role();
-        Period period = new Period(calendarField, start, end);
-        
-        role.setGroup(group);
-        role.setPeriod(period);
-        
+    public void registerRole(@NotNull String group) {
+        Role role = new Role(group);
         realm.create(role);
     }
 
@@ -183,21 +177,6 @@ public class AdministratorEJB implements Administration {
         subject.setPassword(password);
         
         realm.update(subject);
-    }
-
-    /**
-     * @see Administration#updateRole(String, String, Integer, Integer, Integer)
-     */
-    @Override
-    public void updateRole(@NotNull String exsisting, @NotNull String role, 
-                           Integer calendarField, Integer start, Integer end) {
-        Role entity = realm.findRoleBy(exsisting);
-        Period period = new Period(calendarField, start, end);
-        
-        entity.setGroup(role);
-        entity.setPeriod(period);
-        
-        realm.update(entity);
     }
 
     /**

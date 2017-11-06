@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>co.dewald</groupId>
 		<artifactId>guardian</artifactId>
-		<version>0.0.A</version>
+		<version>1.0.0</version>
 	</parent>
 	<artifactId>guardian-gatekeeper</artifactId>
 	<name>gatekeeper</name>

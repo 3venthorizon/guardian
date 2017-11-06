@@ -2,7 +2,6 @@ package co.dewald.guardian;
 
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -51,12 +50,9 @@ public class GuardianEJB implements Guardian {
         try {
             Subject subject = realm.findSubjectBy(username);
             Permission grant = realm.findPermissionBy(resource, action);
-            final Date now = new Date();
             if (!Boolean.TRUE.equals(grant.getActive())) return Boolean.FALSE;
             
             for (Role role : subject.getRoles()) {
-                if (role.getPeriod() != null && !role.getPeriod().in(now)) continue;
-                
                 for (Permission permission : role.getPermissions()) {
                     if (permission.equivalent(grant)) return Boolean.TRUE;
                 }
@@ -77,11 +73,8 @@ public class GuardianEJB implements Guardian {
         
         try {
             Subject subject = realm.findSubjectBy(username);
-            final Date now = new Date();
             
             ROLE: for (Role role : subject.getRoles()) {
-                if (role.getPeriod() != null && !role.getPeriod().in(now)) continue;
-                
                 PERMISSION: for (Permission permission : role.getPermissions()) {
                     if (remove.isEmpty()) break ROLE;
                     if (!Boolean.TRUE.equals(permission.getActive())) continue;
@@ -133,7 +126,7 @@ public class GuardianEJB implements Guardian {
             if (Boolean.TRUE.equals(permission.getBypass())) return Boolean.FALSE;
             throw new SecurityException("Resource Deactivated: " + resource + "#" + action);
         } catch (Exception e) {
-            throw new SecurityException(e);
+            throw new SecurityException("Resource Deactivated: " + resource + "#" + action, e);
         }
     }
     

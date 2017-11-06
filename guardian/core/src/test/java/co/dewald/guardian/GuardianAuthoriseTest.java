@@ -3,13 +3,10 @@ package co.dewald.guardian;
 
 import static org.junit.Assert.*;
 
-import java.util.Calendar;
-
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-import co.dewald.guardian.realm.Period;
 import co.dewald.guardian.realm.Permission;
 import co.dewald.guardian.realm.Role;
 import co.dewald.guardian.realm.Subject;
@@ -140,41 +137,6 @@ public class GuardianAuthoriseTest {
         Permission found = new Permission(RESOURCE, ACTION, Boolean.TRUE, Boolean.FALSE);
         Role role = new Role();
         role.setGroup("Role");
-        role.getPermissions().add(found);
-        data.subject.getRoles().add(role);
-        data.permission = new Permission(RESOURCE, ACTION, Boolean.TRUE, Boolean.FALSE);
-        
-        Boolean authorised = guardian.authorise(USERNAME, RESOURCE, ACTION);
-        
-        assertTrue(authorised);
-    }
-    
-    @Test
-    public void rolePeriodMismatch() {
-        data.subject = new Subject();
-        Permission found = new Permission(RESOURCE, ACTION, Boolean.TRUE, Boolean.FALSE);
-        Role role = new Role();
-        Period period = new Period(Calendar.YEAR, null, 2000); //before Y2K
-        role.setGroup("Role");
-        role.setPeriod(period);
-        role.getPermissions().add(found);
-        data.subject.getRoles().add(role);
-        data.permission = new Permission(RESOURCE, ACTION, Boolean.TRUE, Boolean.FALSE);
-        
-        Boolean authorised = guardian.authorise(USERNAME, RESOURCE, ACTION);
-        
-        assertFalse(authorised);
-    }
-    
-    @Test
-    public void rolePeriodMatch() {
-        data.subject = new Subject();
-        Permission found = new Permission(RESOURCE, ACTION, Boolean.TRUE, Boolean.FALSE);
-        Role role = new Role();
-        Period period = new Period(Calendar.YEAR, 2000, null); //after Y2K
-        
-        role.setGroup("Role");
-        role.setPeriod(period);
         role.getPermissions().add(found);
         data.subject.getRoles().add(role);
         data.permission = new Permission(RESOURCE, ACTION, Boolean.TRUE, Boolean.FALSE);

@@ -35,11 +35,8 @@ public interface Administration {
      * Register a new Role that is in effect within a calendar timespan.
      * 
      * @param group
-     * @param calendarField may be null to indicate any time that this permission is in 
-     * @param start may be null to indicate any time before the end
-     * @param end may be null to indicate any time after the start
      */
-    void registerRole(@NotNull String group, Integer calendarField, Integer start, Integer end);
+    void registerRole(@NotNull String group);
     
     /**
      * Associates existing permissions with an existing role.
@@ -105,17 +102,6 @@ public interface Administration {
      * @param password
      */
     void updateSubject(String existing, String username, String password);
-    
-    /**
-     * Updates the Role.
-     * 
-     * @param exsisting role
-     * @param role
-     * @param calendarField
-     * @param start
-     * @param end
-     */
-    void updateRole(@NotNull String exsisting, @NotNull String role, Integer calendarField, Integer start, Integer end);
     
     /**
      * Activates or Deactivates Permission.

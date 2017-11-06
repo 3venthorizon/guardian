@@ -39,9 +39,6 @@ public class Role extends RealmEntity implements Serializable {
     @Column(nullable = false, unique = true, length = 100)
     private String group;
 
-    @Embedded
-    private Period period;
-
     // uni-directional many-to-many association to Permission
     @ManyToMany(cascade = { CascadeType.MERGE, CascadeType.REFRESH })
     @JoinTable(name = "role_permission_map", 
@@ -53,16 +50,10 @@ public class Role extends RealmEntity implements Serializable {
         super();
     }
     
-    public Role(String group, Period period) {
+    public Role(String group) {
         this();
         
         setGroup(group);
-        setPeriod(period);
-    }
-
-    public void setPeriod(Period period) {
-        if (period == null || period.getCalendarField() == null) this.period = null; 
-        else this.period = period;
     }
 
     public Set<Permission> getPermissions() {
@@ -71,8 +62,6 @@ public class Role extends RealmEntity implements Serializable {
     }
 
     //@formatter:off
-    public Period getPeriod() { return period; }
-
     public String getGroup() { return group; }
     public void setGroup(String group) { this.group = group; }
 }

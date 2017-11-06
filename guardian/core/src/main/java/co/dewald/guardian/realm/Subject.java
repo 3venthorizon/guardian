@@ -83,14 +83,8 @@ public class Subject extends RealmEntity implements Serializable {
     }
     
     /**
-     * Hash and Salts the password. The following constraints are required to ensure a minimum strength password.
-     * <ul>
-     * <li>digit from 0-9</li>
-     * <li>lowercase character</li>
-     * <li>uppercase character</li>
-     * <li>special symbols ~'!@#$%?\\\/&*\]|\[=()}"{+_:;,.><'-</li>
-     * <li>8 or more characters long</li>
-     * </ul>
+     * Hash and Salts the password.
+     * 
      * @param password
      */
     public void setPassword(String password) { 

@@ -6,56 +6,33 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>co.dewald</groupId>
 	<artifactId>guardian</artifactId>
-	<version>0.0.A</version>
+	<version>1.0.0</version>
 	<packaging>pom</packaging>
 	<name>guardian</name>
 
 	<properties>
-	    <guardian-version>0.0.A</guardian-version>
+	    <guardian.version>1.0.0</guardian.version>
 		<!-- encoding -->
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<!--java version -->
-		<java-version>1.7</java-version>
+		<java.version>1.8</java.version>
 
-		<ejb-plugin-version>2.5</ejb-plugin-version>
-		<war-plugin-version>2.6</war-plugin-version>
-		<ear-plugin-version>2.10</ear-plugin-version>
-		<dependency-plugin-version>2.10</dependency-plugin-version>
-		<compiler-plugin-version>3.3</compiler-plugin-version>
-		<failsafe-plugin-version>2.18.1</failsafe-plugin-version>
-		<jacoco-plugin-version>0.7.5.201505241946</jacoco-plugin-version>
+		<maven-ejb-plugin.version>2.5</maven-ejb-plugin.version>
+		<maven-war-plugin.version>2.6</maven-war-plugin.version>
+		<maven-ear-plugin.version>2.10</maven-ear-plugin.version>
+		<maven-dependency-plugin.version>2.10</maven-dependency-plugin.version>
+		<maven-compiler-plugin.version>3.3</maven-compiler-plugin.version>
+		<maven-failsafe-plugin.version>2.18.1</maven-failsafe-plugin.version>
+		<jacoco-maven-plugin.version>0.7.9</jacoco-maven-plugin.version>
 
 		<!-- dependency versions -->
-		<javaee-api-version>7.0</javaee-api-version>
-		<junit-version>4.11</junit-version>
-		<mockito-version>1.9.5</mockito-version>
+		<javaee-api.version>7.0</javaee-api.version>
+		<junit.version>4.11</junit.version>
+		<mockito-all.version>1.9.5</mockito-all.version>
 
 		<!-- EJB spec version -->
-		<ejb-spec-version>3.2</ejb-spec-version>
+		<ejb-spec.version>3.2</ejb-spec.version>
 	</properties>
-
-	<dependencyManagement>
-		<dependencies>
-			<dependency>
-				<groupId>javax</groupId>
-				<artifactId>javaee-api</artifactId>
-				<version>${javaee-api-version}</version>
-				<scope>provided</scope>
-			</dependency>
-			<dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit-version}</version>
-                <scope>test</scope>
-            </dependency>
-			<dependency>
-				<groupId>org.mockito</groupId>  
-                <artifactId>mockito-all</artifactId>  
-				<version>${mockito-version}</version>
-				<scope>test</scope>
-			</dependency>
-		</dependencies>
-	</dependencyManagement>
 
 	<!-- Plugin management -->
 	<build>
@@ -65,10 +42,10 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-compiler-plugin</artifactId>
-					<version>${compiler-plugin-version}</version>
+					<version>${maven-compiler-plugin.version}</version>
 					<configuration>
-						<source>${java-version}</source>
-						<target>${java-version}</target>
+						<source>${java.version}</source>
+						<target>${java.version}</target>
 						<debug>true</debug>
 						<debuglevel>lines,vars,source</debuglevel>
 						<showDeprecation>true</showDeprecation>
@@ -80,7 +57,7 @@
 				<plugin>
 					<groupId>org.jacoco</groupId>
 					<artifactId>jacoco-maven-plugin</artifactId>
-					<version>${jacoco-plugin-version}</version>
+					<version>${jacoco-maven-plugin.version}</version>
 					<executions>
 						<execution>
 							<id>default-prepare-agent</id>
@@ -102,7 +79,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-dependency-plugin</artifactId>
-					<version>${dependency-plugin-version}</version>
+					<version>${maven-dependency-plugin.version}</version>
 					<executions>
 						<execution>
 							<phase>validate</phase>
@@ -129,7 +106,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-failsafe-plugin</artifactId>
-					<version>${failsafe-plugin-version}</version>
+					<version>${maven-failsafe-plugin.version}</version>
 					<executions>
 						<execution>
 							<goals>
@@ -144,16 +121,16 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-ear-plugin</artifactId>
-					<version>${ear-plugin-version}</version>
+					<version>${maven-ear-plugin.version}</version>
 				</plugin>
 
 				<!-- ejb plugin -->
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-ejb-plugin</artifactId>
-					<version>${ejb-plugin-version}</version>
+					<version>${maven-ejb-plugin.version}</version>
 					<configuration>
-						<ejbVersion>${ejb-spec-version}</ejbVersion>
+						<ejbVersion>${ejb-spec.version}</ejbVersion>
 					</configuration>
 				</plugin>
 
@@ -161,33 +138,7 @@
 				<plugin>
 					<groupId>org.apache.maven.plugins</groupId>
 					<artifactId>maven-war-plugin</artifactId>
-					<version>${war-plugin-version}</version>
-				</plugin>
-				
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.jacoco</groupId>
-										<artifactId>jacoco-maven-plugin</artifactId>
-										<versionRange>[0.7.4.201502262128,)</versionRange>
-										<goals>
-											<goal>prepare-agent</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
+					<version>${maven-war-plugin.version}</version>
 				</plugin>
 			</plugins>
 		</pluginManagement>
@@ -197,7 +148,49 @@
 		<module>gatekeeper</module>
 		<module>core</module>
 		<module>web</module>
-		<module>gwt</module>
 		<module>ear</module>
 	</modules>
+	
+	<dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>javax</groupId>
+                <artifactId>javaee-api</artifactId>
+                <version>${javaee-api.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>junit</groupId>
+                <artifactId>junit</artifactId>
+                <version>${junit.version}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mockito</groupId>  
+                <artifactId>mockito-all</artifactId>  
+                <version>${mockito-all.version}</version>
+                <scope>test</scope>
+            </dependency>
+            
+            <!-- module dependencies -->
+            <dependency>
+                <groupId>co.dewald</groupId>
+                <artifactId>guardian-gatekeeper</artifactId>
+                <type>jar</type>
+                <version>${guardian.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>co.dewald</groupId>
+                <artifactId>guardian-core</artifactId>
+                <type>ejb</type>
+                <version>${guardian.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>co.dewald</groupId>
+                <artifactId>guardian-web</artifactId>
+                <type>war</type>
+                <version>${guardian.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 </project>

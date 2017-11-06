@@ -10,7 +10,6 @@
 		<class>co.dewald.guardian.realm.Permission</class>
 		<class>co.dewald.guardian.realm.Role</class>
 		<class>co.dewald.guardian.realm.Subject</class>
-		<class>co.dewald.guardian.realm.Period</class>
 		<class>co.dewald.guardian.realm.State</class>
 		<shared-cache-mode>NONE</shared-cache-mode>
 	</persistence-unit>
