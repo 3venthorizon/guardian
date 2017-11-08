@@ -45,7 +45,6 @@ public class Subject extends RealmEntity implements Serializable {
     @Column(nullable = false, length = 100)
     private String salt;
 
-    @Pattern(regexp = "^[a-z0-9_-]{8,100}$")
     @Column(unique = true, updatable = false, nullable = false, length = 100)
     private String username;
 

@@ -4,8 +4,13 @@
 	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
 	version="3.1">
+	
 	<session-config>
 		<session-timeout>10</session-timeout>
 	</session-config>
 
+	<servlet-mapping>
+		<servlet-name>javax.ws.rs.core.Application</servlet-name>
+		<url-pattern>/administration/*</url-pattern>
+	</servlet-mapping>
 </web-app>
