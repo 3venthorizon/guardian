@@ -1,7 +1,6 @@
 package co.dewald.guardian.realm.dao;
 
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -43,14 +42,6 @@ public interface RealmDAO {
     List<Permission> fetchPermissionsByResource(String resource);
 
     /**
-     * Fetch roles by the supplied list of groups.
-     * 
-     * @param groups
-     * @return role list
-     */
-    List<Role> fetchRolesBy(Collection<String> groups);
-
-    /**
      * Fetch roles associated with the permission.
      * 
      * @param resource
@@ -60,20 +51,21 @@ public interface RealmDAO {
     List<Role> fetchRolesByPermission(String resource, String action);
 
     /**
-     * Fetch subjects by the supplied list of usernames.
-     * 
-     * @param usernames
-     * @return subject list
-     */
-    List<Subject> fetchSubjectsBy(Collection<String> usernames);
-
-    /**
      * Fetch subjects associated with the role.
      * 
      * @param group
      * @return subject list
      */
     List<Subject> fetchSubjectsByRole(String group);
+    
+    /**
+     * Fetch subjects associated with the permission.
+     * 
+     * @param resource
+     * @param action
+     * @return
+     */
+    List<Subject> fetchSubjectsByPermission(String resource, String action);
 
     /**
      * Wrapper for the entity manager.
@@ -87,10 +79,8 @@ public interface RealmDAO {
     /**
      * Finds the {@link Subject} by it's username.
      * 
-     * @param username
-     *            credentials
-     * @param password
-     *            credentials
+     * @param username credentials
+     * @param password credentials
      * @return subject
      */
     Subject findSubjectBy(String username);

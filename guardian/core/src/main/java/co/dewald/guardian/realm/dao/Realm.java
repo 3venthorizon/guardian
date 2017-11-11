@@ -1,8 +1,6 @@
 package co.dewald.guardian.realm.dao;
 
 
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -68,42 +66,34 @@ public class Realm implements RealmDAO {
     @Override
     public List<Permission> fetchPermissionsByResource(String resource) {
         TypedQuery<Permission> query = em.createNamedQuery(Permission.QUERY_BY_RESOURCE, Permission.class);
-        List<Permission> permissions = query.setParameter(Permission.PARAM_RESOURCE, resource).getResultList();
-        
+        List<Permission> permissions = query.setParameter(Permission.PARAM_RESOURCE, resource)
+                                            .getResultList();
         return permissions;
     }
 
     @Override
-    public List<Role> fetchRolesBy(Collection<String> groups) {
-        TypedQuery<Role> query = em.createNamedQuery(Role.QUERY_ROLES, Role.class);
-        List<Role> roles = query.setParameter(Role.PARAM_ROLES, groups).getResultList();
-        
-        return roles;
-    }
-    
-    @Override
     public List<Role> fetchRolesByPermission(String resource, String action) {
         TypedQuery<Role> query = em.createNamedQuery(Role.QUERY_BY_PERMISSION, Role.class);
-        List<Role> roles = query.setParameter(Role.PARAM_RESOURCE, resource)
-                                .setParameter(Role.PARAM_ACTION, action)
+        List<Role> roles = query.setParameter(Permission.PARAM_RESOURCE, resource)
+                                .setParameter(Permission.PARAM_ACTION, action)
                                 .getResultList();
-        
         return roles;
-    }
-
-    @Override
-    public List<Subject> fetchSubjectsBy(Collection<String> usernames) {
-        TypedQuery<Subject> query = em.createNamedQuery(Subject.QUERY_IN_USERNAMES, Subject.class);
-        List<Subject> subjects = query.setParameter(Subject.PARAM_USERNAMES, usernames).getResultList();
-        
-        return subjects;
     }
 
     @Override
     public List<Subject> fetchSubjectsByRole(String group) {
         TypedQuery<Subject> query = em.createNamedQuery(Subject.JPQL_BY_ROLE, Subject.class);
-        List<Subject> subjects = query.setParameter(Subject.PARAM_ROLE, group).getResultList();
-        
+        List<Subject> subjects = query.setParameter(Role.PARAM_ROLE, group)
+                                      .getResultList();
+        return subjects;
+    }
+
+    @Override
+    public List<Subject> fetchSubjectsByPermission(String resource, String action) {
+        TypedQuery<Subject> query = em.createNamedQuery(Subject.QUERY_BY_PERMISSION, Subject.class);
+        List<Subject> subjects = query.setParameter(Permission.PARAM_RESOURCE, resource)
+                                      .setParameter(Permission.PARAM_ACTION, action)
+                                      .getResultList();
         return subjects;
     }
 
@@ -114,14 +104,17 @@ public class Realm implements RealmDAO {
 
     @Override
     public Subject findSubjectBy(String username) {
-        List<Subject> subjects = fetchSubjectsBy(Arrays.asList(username));
-        return subjects.get(0);
+        TypedQuery<Subject> query = em.createNamedQuery(Subject.QUERY_BY_USERNAME, Subject.class);
+        Subject subject = query.setParameter(Subject.PARAM_USERNAME, username)
+                               .getSingleResult();
+        return subject;
     }
 
     @Override
     public Role findRoleBy(String group) {
-        List<Role> roles = fetchRolesBy(Arrays.asList(group));
-        return roles.get(0);
+        TypedQuery<Role> query = em.createNamedQuery(Role.QUERY_ROLE, Role.class);
+        Role role = query.setParameter(Role.PARAM_ROLE, group).getSingleResult();
+        return role;
     }
 
     @Override

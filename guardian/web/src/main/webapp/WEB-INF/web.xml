@@ -9,8 +9,4 @@
 		<session-timeout>10</session-timeout>
 	</session-config>
 
-	<servlet-mapping>
-		<servlet-name>javax.ws.rs.core.Application</servlet-name>
-		<url-pattern>/administration/*</url-pattern>
-	</servlet-mapping>
 </web-app>

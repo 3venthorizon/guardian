@@ -6,7 +6,6 @@ import java.io.Serializable;
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;
 import javax.persistence.*;
-import javax.validation.constraints.Pattern;
 import javax.xml.bind.DatatypeConverter;
 
 import java.security.SecureRandom;
@@ -21,21 +20,26 @@ import java.util.Set;
  */
 @NamedQueries({
     @NamedQuery(name = Subject.QUERY_ALL, query = Subject.JPQL_ALL),
-    @NamedQuery(name = Subject.QUERY_IN_USERNAMES, query = Subject.JPQL_IN_USERNAMES),
-    @NamedQuery(name = Subject.QUERY_BY_ROLE, query = Subject.JPQL_BY_ROLE) })
+    @NamedQuery(name = Subject.QUERY_BY_USERNAME, query = Subject.JPQL_BY_USERNAME),
+    @NamedQuery(name = Subject.QUERY_BY_ROLE, query = Subject.JPQL_BY_ROLE),
+    @NamedQuery(name = Subject.QUERY_BY_PERMISSION, query = Subject.JPQL_BY_PERMISSION)})
 @Entity
 @Table(name = "subject")
 public class Subject extends RealmEntity implements Serializable {
     public static final String QUERY_ALL = "Subject[all]";
     public static final String JPQL_ALL = "SELECT s FROM Subject s";
     
-    public static final String QUERY_IN_USERNAMES = "Subject[usernames]";
-    public static final String JPQL_IN_USERNAMES = "SELECT s FROM Subject s WHERE s.username IN :usernames";
-    public static final String PARAM_USERNAMES = "usernames";
+    public static final String QUERY_BY_USERNAME = "Subject[username]";
+    public static final String JPQL_BY_USERNAME = "SELECT s FROM Subject s WHERE s.username = :username";
+    public static final String PARAM_USERNAME = "username";
     
     public static final String QUERY_BY_ROLE = "Subjects[role]";
     public static final String JPQL_BY_ROLE = "SELECT s FROM Subject s JOIN s.roles r WHERE r.group = :group";
-    public static final String PARAM_ROLE = "group";
+    
+    public static final String QUERY_BY_PERMISSION = "Subject[resource,action]";
+    public static final String JPQL_BY_PERMISSION = 
+        "SELECT s FROM Subject s JOIN s.roles r JOIN r.permissions p " +
+        "WHERE p.resource = :resource AND p.action = :action";
     
     static final long serialVersionUID = -1092299602072486407L;
 

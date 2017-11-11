@@ -25,8 +25,13 @@ public class Permission extends RealmEntity implements Serializable {
     
     public static final String QUERY_BY_RESOURCE = "Permission[resource]";
     public static final String QUERY = "Permission[resource,action]";
-    public static final String JPQL_BY_RESOURCE = "SELECT p FROM Permission p WHERE p.resource = :resource";
-    public static final String JPQL = JPQL_BY_RESOURCE + " AND p.action = :action ORDER BY p.resource";
+    public static final String JPQL_BY_RESOURCE = 
+        "SELECT p FROM Permission p " +
+        "WHERE p.resource = :resource " +
+        "ORDER BY p.resource";
+    public static final String JPQL = 
+        "SELECT p FROM Permission p " +
+        "WHERE p.resource = :resource AND p.action = :action";
     public static final String PARAM_RESOURCE = "resource";
     public static final String PARAM_ACTION = "action";
     

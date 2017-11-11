@@ -15,6 +15,7 @@ import javax.persistence.MappedSuperclass;
  */
 @MappedSuperclass
 public abstract class RealmEntity {
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(updatable = false, unique = true, nullable = false)
