@@ -12,12 +12,13 @@ import org.junit.Test;
  */
 public class SubjectTest {
     
+    String salt = "yusEtXQXmmA28r1eAiFYxWGohUQxtImBR4SAipPQlngMxiTBr3n/kRk1qIlhg70f9ZzabxnBDwHDQutPCPu4JQ==";
     Subject subject;
     
     @Before
     public void setUp() {
         subject = new Subject();
-        
+        subject.setSalt();
         assertTrue(subject instanceof RealmEntity);
     }
     
@@ -35,7 +36,6 @@ public class SubjectTest {
      */
     @Test
     public void hash() throws Exception {
-        String salt = "yusEtXQXmmA28r1eAiFYxWGohUQxtImBR4SAipPQlngMxiTBr3n/kRk1qIlhg70f9ZzabxnBDwHDQutPCPu4JQ==";
         String hash = subject.hash("password", salt);
 
         assertEquals("gOnOrXc3oy8EVM/2Clg8eLQ6+qbdV+l3Iumz85WfkNla+GoZZQMRXD9dM8GFDVEz1dscq7ztzzDV9zDyE96w2g==", hash);
