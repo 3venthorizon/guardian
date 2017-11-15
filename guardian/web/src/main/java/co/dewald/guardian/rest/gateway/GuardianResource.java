@@ -24,7 +24,7 @@ public class GuardianResource {
 
     @POST @Path("authenticate/{username}")
     public Response authenticate(@PathParam(value = "username") String username, 
-                               @HeaderParam(value = "password") String password) {
+                                 @HeaderParam(value = "password") String password) {
         Boolean success = guardian.authenticate(username, password);
         
         if (Boolean.TRUE.equals(success) == false) return Response.status(UNAUTHORIZED)
