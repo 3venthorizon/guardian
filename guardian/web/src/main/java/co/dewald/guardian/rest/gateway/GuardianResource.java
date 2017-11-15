@@ -27,11 +27,12 @@ public class GuardianResource {
                                @HeaderParam(value = "password") String password) {
         Boolean success = guardian.authenticate(username, password);
         
-        if (Boolean.TRUE.equals(success) == false) return Response.status(FORBIDDEN)
+        if (Boolean.TRUE.equals(success) == false) return Response.status(UNAUTHORIZED)
                                                                   .entity("Authentication Failed")
                                                                   .build();
         
         String token = guardian.getSessionToken(username);
-        return Response.status(OK).entity(token).build();
+        return Response.ok(token)
+                       .build();
     }
 }
