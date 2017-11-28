@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/guardian"
+	xmlns:tns="http://www.example.org/guardian" elementFormDefault="qualified">
+	
+    <complexType name="User">
+    	<sequence>
+    		<element name="password" type="string"></element>
+    	</sequence>
+    	<attribute name="username" use="required">
+    		<simpleType>
+    			<restriction base="string">
+    				<maxLength value="100"></maxLength>
+    				<whiteSpace value="collapse"></whiteSpace>
+    			</restriction>
+    		</simpleType>
+    	</attribute>
+    </complexType>
+
+    <complexType name="Role">
+    	<attribute name="group" use="required">
+    		<simpleType>
+    			<restriction base="string">
+    				<maxLength value="100"></maxLength>
+    			</restriction>
+    		</simpleType>
+    	</attribute>
+    </complexType>
+
+    <complexType name="Permission">
+    	<sequence>
+    		<element name="active" type="boolean" minOccurs="0" maxOccurs="1" />
+    		<element name="bypass" type="boolean" minOccurs="0" maxOccurs="1" />
+    	</sequence>
+    	<attribute name="resource" type="string" />
+    	<attribute name="action" type="string" />
+    </complexType>
+
+</schema>

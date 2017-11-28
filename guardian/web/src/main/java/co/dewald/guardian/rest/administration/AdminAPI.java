@@ -17,7 +17,7 @@ public class AdminAPI extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> resources = new HashSet<>();
-        resources.add(AdminResource.class);
+        resources.add(UserResource.class);
         
         return resources;
     }
