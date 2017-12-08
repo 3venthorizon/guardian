@@ -13,27 +13,34 @@ import javax.persistence.*;
  */
 @NamedQueries({
     @NamedQuery(name = Permission.QUERY_ALL, query = Permission.JPQL_ALL),
-    @NamedQuery(name = Permission.QUERY, query = Permission.JPQL),
-    @NamedQuery(name = Permission.QUERY_BY_RESOURCE, query = Permission.JPQL_BY_RESOURCE) })
+    @NamedQuery(name = Permission.QUERY_PERMISSION, query = Permission.JPQL),
+    @NamedQuery(name = Permission.QUERY_BY_RESOURCE, query = Permission.JPQL_BY_RESOURCE),
+    @NamedQuery(name = Permission.QUERY_BY_SUBJECT, query = Permission.JPQL_BY_SUBJECT),
+    @NamedQuery(name = Permission.QUERY_BY_ROLE, query = Permission.JPQL_BY_ROLE)})
 @Entity
 @Table(name = "permission")
 public class Permission extends RealmEntity implements Serializable {
     public static final String ALL = "*";
-
-    public static final String QUERY_ALL = "Permission[all]";
-    public static final String JPQL_ALL = "SELECT p FROM Permission p";
-    
-    public static final String QUERY_BY_RESOURCE = "Permission[resource]";
-    public static final String QUERY = "Permission[resource,action]";
-    public static final String JPQL_BY_RESOURCE = 
-        "SELECT p FROM Permission p " +
-        "WHERE p.resource = :resource " +
-        "ORDER BY p.resource";
-    public static final String JPQL = 
-        "SELECT p FROM Permission p " +
-        "WHERE p.resource = :resource AND p.action = :action";
     public static final String PARAM_RESOURCE = "resource";
     public static final String PARAM_ACTION = "action";
+
+    public static final String QUERY_ALL = "Permission[all]";
+    public static final String QUERY_PERMISSION = "Permission[resource,action]";
+    public static final String QUERY_BY_RESOURCE = "Permission[resource]";
+    public static final String QUERY_BY_SUBJECT = "Permission[subject]";
+    public static final String QUERY_BY_ROLE = "Permission[role]";
+    
+    static final String WHERE_PERMISSION = "WHERE p.resource = :" + PARAM_RESOURCE + " AND p.action = :" + PARAM_ACTION;
+    
+    static final String JPQL_ALL = "SELECT p FROM Permission p";
+    static final String JPQL_BY_RESOURCE = 
+        "SELECT p FROM Permission p " +
+        "WHERE p.resource = :" + PARAM_RESOURCE +
+        " ORDER BY p.action";
+    static final String JPQL = "SELECT p FROM Permission p " + WHERE_PERMISSION;
+    static final String JPQL_BY_SUBJECT = 
+        "SELECT p FROM Subject s JOIN s.roles r JOIN r.permissions p " + Subject.WHERE_SUBJECT;
+    static final String JPQL_BY_ROLE = "SELECT p FROM Role r JOIN r.permissions p " + Role.WHERE_ROLE;
     
     static final long serialVersionUID = 7254517195691039561L;
 

@@ -18,6 +18,8 @@ public class AdminAPI extends Application {
     public Set<Class<?>> getClasses() {
         Set<Class<?>> resources = new HashSet<>();
         resources.add(UserResource.class);
+        resources.add(RoleResource.class);
+        resources.add(PermissionResource.class);
         
         return resources;
     }
