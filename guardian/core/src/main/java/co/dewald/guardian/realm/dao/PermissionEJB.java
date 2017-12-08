@@ -12,7 +12,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import co.dewald.guardian.admin.PermissionResource;
+import co.dewald.guardian.admin.dao.PermissionDAO;
 import co.dewald.guardian.dto.User;
 import co.dewald.guardian.gate.Guard;
 import co.dewald.guardian.realm.Permission;
@@ -26,7 +26,7 @@ import co.dewald.guardian.realm.Subject;
 //FIXME @Guard
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Stateless(name = "PermissionDAO")
-public class PermissionDAO implements AdminDAO<Permission, co.dewald.guardian.dto.Permission>, PermissionResource {
+public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.dto.Permission>, PermissionDAO {
 
     @PersistenceContext(unitName = "realm") EntityManager em;
     @EJB RealmDAO realm;
@@ -104,11 +104,6 @@ public class PermissionDAO implements AdminDAO<Permission, co.dewald.guardian.dt
     public void delete(co.dewald.guardian.dto.Permission id) {
         Permission permission = realm.findPermissionBy(id.getResource(), id.getAction());
         realm.remove(permission);
-    }
-
-    @Override
-    public co.dewald.guardian.dto.Permission getId(co.dewald.guardian.dto.Permission dto) {
-        return dto;
     }
 
     @Override

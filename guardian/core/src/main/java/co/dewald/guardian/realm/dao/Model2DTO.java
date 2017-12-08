@@ -16,7 +16,7 @@ import co.dewald.guardian.realm.RealmEntity;
  * 
  * @author Dewald Pretorius
  */
-public interface AdminDAO<Model extends RealmEntity, DTO> {
+public interface Model2DTO<Model extends RealmEntity, DTO> {
     
     Function<Model, DTO> model2dto();
 

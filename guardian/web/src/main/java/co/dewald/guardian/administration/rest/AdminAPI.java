@@ -1,4 +1,4 @@
-package co.dewald.guardian.rest.administration;
+package co.dewald.guardian.administration.rest;
 
 
 import java.util.HashSet;
@@ -6,6 +6,10 @@ import java.util.Set;
 
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
+
+import co.dewald.guardian.administration.Permissions;
+import co.dewald.guardian.administration.Roles;
+import co.dewald.guardian.administration.Users;
 
 
 /**
@@ -17,9 +21,9 @@ public class AdminAPI extends Application {
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> resources = new HashSet<>();
-        resources.add(UserResource.class);
-        resources.add(RoleResource.class);
-        resources.add(PermissionResource.class);
+        resources.add(Users.class);
+        resources.add(Roles.class);
+        resources.add(Permissions.class);
         
         return resources;
     }

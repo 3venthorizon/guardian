@@ -16,7 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import co.dewald.guardian.admin.RoleResource;
+import co.dewald.guardian.admin.dao.RoleDAO;
 import co.dewald.guardian.dto.Permission;
 import co.dewald.guardian.dto.User;
 import co.dewald.guardian.gate.Guard;
@@ -29,7 +29,7 @@ import co.dewald.guardian.realm.Role;
 //FIXME @Guard
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Stateless(name = "RoleDAO")
-public class RoleDAO implements AdminDAO<Role, co.dewald.guardian.dto.Role>, RoleResource {
+public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, RoleDAO {
 
     @PersistenceContext(unitName = "realm") EntityManager em;
     @EJB RealmDAO realm;
@@ -99,11 +99,6 @@ public class RoleDAO implements AdminDAO<Role, co.dewald.guardian.dto.Role>, Rol
     @Override
     public void create(co.dewald.guardian.dto.Role dto) {
         realm.create(DTO2MODEL.apply(dto));
-    }
-
-    @Override
-    public String getId(co.dewald.guardian.dto.Role dto) {
-        return dto.getGroup();
     }
 
     @Override

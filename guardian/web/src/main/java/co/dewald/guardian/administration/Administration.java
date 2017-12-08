@@ -1,4 +1,4 @@
-package co.dewald.guardian.rest.administration;
+package co.dewald.guardian.administration;
 
 
 import javax.ejb.EJB;
@@ -13,7 +13,7 @@ import co.dewald.guardian.gate.Guardian;
  * @author Dewald Pretorius
  */
 @Path("/")
-public class AdminResource {
+public class Administration {
     
     
 }

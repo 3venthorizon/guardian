@@ -1,4 +1,4 @@
-package co.dewald.guardian.admin;
+package co.dewald.guardian.admin.dao;
 
 
 import java.util.List;
@@ -11,7 +11,7 @@ import co.dewald.guardian.dto.User;
 /**
  * @author Dewald Pretorius
  */
-public interface UserResource extends AdminResource<User, String> {
+public interface UserDAO extends DAO<User, String> {
 
     List<User> fetchBy(Role role);
     

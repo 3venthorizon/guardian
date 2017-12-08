@@ -16,7 +16,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import co.dewald.guardian.admin.UserResource;
+import co.dewald.guardian.admin.dao.UserDAO;
 import co.dewald.guardian.dto.Permission;
 import co.dewald.guardian.dto.Role;
 import co.dewald.guardian.dto.User;
@@ -30,7 +30,7 @@ import co.dewald.guardian.realm.Subject;
 //FIXME @Guard
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Stateless(name = "UserDAO")
-public class UserDAO implements AdminDAO<Subject, User>, UserResource {
+public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
 
     @PersistenceContext(unitName = "realm") EntityManager em;
     @EJB RealmDAO realm;
@@ -104,11 +104,6 @@ public class UserDAO implements AdminDAO<Subject, User>, UserResource {
     @Override
     public void create(User user) {
         realm.create(DTO2MODEL.apply(user));
-    }
-
-    @Override
-    public String getId(User user) {
-        return user.getUsername();
     }
 
     @Override
