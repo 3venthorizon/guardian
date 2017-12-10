@@ -1,4 +1,4 @@
-package co.dewald.guardian.admin.dao;
+package co.dewald.guardian.dao;
 
 
 import java.util.List;

@@ -1,12 +1,17 @@
-package co.dewald.guardian.administration;
+package co.dewald.guardian.administration.rest;
 
 
 import java.util.List;
 
 import javax.ejb.EJB;
+import javax.ws.rs.container.ResourceContext;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 
 import co.dewald.guardian.admin.dao.PermissionDAO;
-import co.dewald.guardian.administration.rest.PermissionResource;
+import co.dewald.guardian.administration.rest.resource.PermissionResource;
+import co.dewald.guardian.administration.rest.resource.RoleResource;
+import co.dewald.guardian.administration.rest.resource.UserResource;
 import co.dewald.guardian.dto.Permission;
 
 
@@ -16,6 +21,8 @@ import co.dewald.guardian.dto.Permission;
  */
 public class Permissions implements PermissionResource {
     
+    @Context ResourceContext resourceContext;
+    @Context UriInfo uriInfo;
     @EJB PermissionDAO permissionDAO;
     
     @Override
@@ -53,5 +60,17 @@ public class Permissions implements PermissionResource {
     @Override
     public void create(Permission permission) {
         permissionDAO.create(permission);
+    }
+
+    @Override
+    public UserResource linkUsers(String resource, String action) {
+        find(resource, action);
+        return resourceContext.getResource(Users.class);
+    }
+
+    @Override
+    public RoleResource linkRoles(String resource, String action) {
+        find(resource, action);
+        return resourceContext.getResource(Roles.class);
     }
 }

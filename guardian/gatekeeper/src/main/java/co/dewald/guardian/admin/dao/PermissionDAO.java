@@ -3,6 +3,7 @@ package co.dewald.guardian.admin.dao;
 
 import java.util.List;
 
+import co.dewald.guardian.dao.DAO;
 import co.dewald.guardian.dto.Permission;
 import co.dewald.guardian.dto.Role;
 import co.dewald.guardian.dto.User;

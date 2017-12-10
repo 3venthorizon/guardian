@@ -1,4 +1,4 @@
-package co.dewald.guardian.rest.gateway;
+package co.dewald.guardian.gateway.rest;
 
 
 import java.util.HashSet;

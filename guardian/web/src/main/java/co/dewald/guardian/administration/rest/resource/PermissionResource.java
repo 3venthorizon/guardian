@@ -1,4 +1,4 @@
-package co.dewald.guardian.administration.rest;
+package co.dewald.guardian.administration.rest.resource;
 
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -14,31 +14,24 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.container.ResourceContext;
-import javax.ws.rs.core.Context;
 
 import co.dewald.guardian.dto.Permission;
 
 
+/**
+ * 
+ * @author Dewald Pretorius
+ */
 @Path("permissions")
 public interface PermissionResource {
 
     @Path("{resource}:{action}/users")
-    default UserResource delegateUsers(@Context ResourceContext resourceContext,
-                               @PathParam(value = "resource") String resource, 
-                               @PathParam(value = "action") String action) {
-        find(resource, action);
-        return resourceContext.getResource(UserResource.class);
-    }
+    UserResource linkUsers(@PathParam(value = "resource") String resource, 
+                           @PathParam(value = "action") String action);
 
     @Path("{resource}:{action}/roles")
-    default RoleResource delegateRoles(@Context ResourceContext resourceContext,
-                               @PathParam(value = "resource") String resource, 
-                               @PathParam(value = "action") String action) {
-        find(resource, action);
-        return resourceContext.getResource(RoleResource.class);
-    }
+    RoleResource linkRoles(@PathParam(value = "resource") String resource, 
+                           @PathParam(value = "action") String action);
 
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})

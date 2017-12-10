@@ -7,10 +7,6 @@ import java.util.Set;
 import javax.ws.rs.ApplicationPath;
 import javax.ws.rs.core.Application;
 
-import co.dewald.guardian.administration.Permissions;
-import co.dewald.guardian.administration.Roles;
-import co.dewald.guardian.administration.Users;
-
 
 /**
  * @author Dewald Pretorius
