@@ -6,13 +6,13 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Response.Status;
 
 import co.dewald.guardian.admin.dao.UserDAO;
 import co.dewald.guardian.administration.rest.resource.PermissionResource;
 import co.dewald.guardian.administration.rest.resource.RoleResource;
 import co.dewald.guardian.administration.rest.resource.UserResource;
-import co.dewald.guardian.dto.Permission;
-import co.dewald.guardian.dto.Role;
 import co.dewald.guardian.dto.User;
 
 
@@ -24,6 +24,9 @@ public class Users implements UserResource {
     
     @Context ResourceContext resourceContext;
     @EJB UserDAO userDAO;
+    
+    Response roleResponse;
+    Response permissionResponse;
 
     @Override
     public List<User> fetch() {
@@ -31,12 +34,17 @@ public class Users implements UserResource {
     }
     
     @Override
-    public User find(String username) {
-        return userDAO.find(username);
+    public Response find(String username) {
+        User user =  userDAO.find(username);
+        if (user == null) return Response.status(Status.NOT_FOUND).build();
+        
+        return Response.ok(user).build();
     }
 
     @Override
     public void delete(String username) {
+        
+        
         userDAO.delete(username);
     }
 
@@ -52,13 +60,17 @@ public class Users implements UserResource {
 
     @Override
     public RoleResource linkRoles(String username) {
-        User user = find(username);
-        return resourceContext.getResource(Roles.class);
+        Roles roles = resourceContext.getResource(Roles.class);
+        roles.userResponse = find(username);
+        
+        return roles;
     }
 
     @Override
     public PermissionResource linkPermissions(String username) {
-        User user = find(username);
-        return resourceContext.getResource(Permissions.class);
+        Permissions permissions = resourceContext.getResource(Permissions.class);
+        permissions.userResponse = find(username);
+        
+        return permissions;
     }
 }

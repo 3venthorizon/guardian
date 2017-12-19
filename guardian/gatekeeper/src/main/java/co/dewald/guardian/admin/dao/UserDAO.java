@@ -18,5 +18,5 @@ public interface UserDAO extends DAO<User, String> {
     
     List<User> fetchBy(Permission permission);
     
-    void link(boolean link, User user, Role role);
+    boolean link(boolean link, User user, Role role);
 }

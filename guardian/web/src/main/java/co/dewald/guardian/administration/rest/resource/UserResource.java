@@ -14,6 +14,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.core.Response;
 
 import co.dewald.guardian.dto.User;
 
@@ -37,7 +38,7 @@ public interface UserResource {
     
     @GET @Path("{username}")
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
-    User find(@PathParam(value = "username") String username);
+    Response find(@PathParam(value = "username") String username);
 
     @DELETE @Path("{username}")
     void delete(@PathParam(value = "username") String username);

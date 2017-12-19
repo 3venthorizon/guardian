@@ -18,7 +18,7 @@ public interface RoleDAO extends DAO<Role, String> {
     
     List<Role> fetchBy(Permission permission);
     
-    void link(boolean link, Role role, User user);
+    boolean link(boolean link, Role role, User user);
     
-    void link(boolean link, Role role, Permission permission);
+    boolean link(boolean link, Role role, Permission permission);
 }

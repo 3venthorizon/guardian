@@ -18,5 +18,5 @@ public interface PermissionDAO extends DAO<Permission, Permission> {
     
     List<Permission> fetchBy(User user);
     
-    void link(boolean link, Permission permission, Role role);
+    boolean link(boolean link, Permission permission, Role role);
 }

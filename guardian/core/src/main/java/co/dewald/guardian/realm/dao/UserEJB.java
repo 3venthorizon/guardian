@@ -20,6 +20,7 @@ import co.dewald.guardian.admin.dao.UserDAO;
 import co.dewald.guardian.dto.Permission;
 import co.dewald.guardian.dto.Role;
 import co.dewald.guardian.dto.User;
+import co.dewald.guardian.gate.Grant;
 import co.dewald.guardian.gate.Guard;
 import co.dewald.guardian.realm.Subject;
 
@@ -36,6 +37,8 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
     @EJB RealmDAO realm;
     
     static final Function<Subject, User> MODEL2DTO = subject -> {
+        if (subject == null) return null;
+        
         User user = new User();
         user.setUsername(subject.getUsername());
         
@@ -80,34 +83,65 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
     
     @Override
     public User find(String username) {
-        Subject subject = realm.findSubjectBy(username);
-        User dto = MODEL2DTO.apply(subject);
+        Subject subject = findSubject(username);
+        return MODEL2DTO.apply(subject);
+    }
+
+    @Override
+    public boolean delete(String username) {
+        Subject subject = findSubject(username);
+        if (subject == null) return false;
         
-        return dto;
+        try {
+            realm.remove(subject);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
-    public void delete(String username) {
-        Subject subject = realm.findSubjectBy(username);
-        realm.remove(subject);
-    }
-
-    @Override
-    public void update(String username, User user) {
-        Subject subject = realm.findSubjectBy(user.getUsername());
-        subject.setUsername(user.getUsername());
-        subject.setPassword(user.getPassword());
+    public boolean update(String username, User user) {
+        Subject subject = findSubject(username);
+        if (subject == null) return false;
         
-        realm.update(subject);
+        try {
+            subject.setUsername(user.getUsername());
+            subject.setPassword(user.getPassword());
+            
+            realm.update(subject);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
-    public void create(User user) {
-        realm.create(DTO2MODEL.apply(user));
+    public boolean create(User user) {
+        try {
+            realm.create(DTO2MODEL.apply(user));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
-    public void link(boolean link, User user, Role roleGroup) {
-        realm.linkUserRole(link, user.getUsername(), roleGroup.getGroup());
+    public boolean link(boolean link, User user, Role roleGroup) {
+        try {
+            realm.linkUserRole(link, user.getUsername(), roleGroup.getGroup());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    @Grant(check = false)
+    Subject findSubject(String username) {
+        try {
+            return realm.findSubjectBy(username);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

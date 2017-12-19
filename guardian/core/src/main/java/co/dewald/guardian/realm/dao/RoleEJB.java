@@ -19,6 +19,7 @@ import javax.persistence.TypedQuery;
 import co.dewald.guardian.admin.dao.RoleDAO;
 import co.dewald.guardian.dto.Permission;
 import co.dewald.guardian.dto.User;
+import co.dewald.guardian.gate.Grant;
 import co.dewald.guardian.gate.Guard;
 import co.dewald.guardian.realm.Role;
 
@@ -35,6 +36,8 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, Ro
     @EJB RealmDAO realm;
     
     static final Function<Role, co.dewald.guardian.dto.Role> MODEL2DTO = model -> {
+        if (model == null) return null;
+        
         co.dewald.guardian.dto.Role dto = new co.dewald.guardian.dto.Role();
         dto.setGroup(model.getGroup());
         
@@ -78,36 +81,74 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, Ro
 
     @Override
     public co.dewald.guardian.dto.Role find(String group) {
-        Role role = realm.findRoleBy(group);
+        Role role = findRole(group);
         return MODEL2DTO.apply(role);
     }
 
     @Override
-    public void delete(String group) {
-        Role role = realm.findRoleBy(group);
-        realm.remove(role);
-    }
-
-    @Override
-    public void update(String group, co.dewald.guardian.dto.Role dto) {
-        Role role = realm.findRoleBy(group);
-        role.setGroup(dto.getGroup());
+    public boolean delete(String group) {
+        Role role = findRole(group);
+        if (role == null) return false;
         
-        realm.update(role);
+        try {
+            realm.remove(role);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
-    public void create(co.dewald.guardian.dto.Role dto) {
-        realm.create(DTO2MODEL.apply(dto));
+    public boolean update(String group, co.dewald.guardian.dto.Role dto) {
+        Role role = findRole(group);
+        if (role == null) return false;
+        
+        try {
+            role.setGroup(dto.getGroup());
+            
+            realm.update(role);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
-    public void link(boolean link, co.dewald.guardian.dto.Role dto, User user) {
-        realm.linkUserRole(link, user.getUsername(), dto.getGroup());
+    public boolean create(co.dewald.guardian.dto.Role dto) {
+        try {
+            realm.create(DTO2MODEL.apply(dto));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
-    public void link(boolean link, co.dewald.guardian.dto.Role dto, Permission permission) {
-        realm.linkRolePermission(link, dto.getGroup(), permission.getResource(), permission.getAction());
+    public boolean link(boolean link, co.dewald.guardian.dto.Role dto, User user) {
+        try {
+            realm.linkUserRole(link, user.getUsername(), dto.getGroup());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    @Override
+    public boolean link(boolean link, co.dewald.guardian.dto.Role dto, Permission permission) {
+        try {
+            realm.linkRolePermission(link, dto.getGroup(), permission.getResource(), permission.getAction());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    @Grant(check = false)
+    Role findRole(String group) {
+        try {
+            return realm.findRoleBy(group);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }

@@ -6,7 +6,7 @@ import java.util.List;
 import javax.ejb.EJB;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Response;
 
 import co.dewald.guardian.admin.dao.RoleDAO;
 import co.dewald.guardian.administration.rest.resource.PermissionResource;
@@ -22,8 +22,10 @@ import co.dewald.guardian.dto.Role;
 public class Roles implements RoleResource {
     
     @Context ResourceContext resourceContext;
-    @Context UriInfo uriInfo;
     @EJB RoleDAO roleDAO;
+    
+    Response userResponse;
+    Response permissionResponse;
     
     @Override
     public List<Role> fetch() {

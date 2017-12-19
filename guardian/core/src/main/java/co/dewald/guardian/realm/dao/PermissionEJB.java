@@ -14,6 +14,7 @@ import javax.persistence.TypedQuery;
 
 import co.dewald.guardian.admin.dao.PermissionDAO;
 import co.dewald.guardian.dto.User;
+import co.dewald.guardian.gate.Grant;
 import co.dewald.guardian.gate.Guard;
 import co.dewald.guardian.realm.Permission;
 import co.dewald.guardian.realm.Role;
@@ -32,6 +33,8 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     @EJB RealmDAO realm;
     
     static final Function<Permission, co.dewald.guardian.dto.Permission> MODEL2DTO = permission -> {
+        if (permission == null) return null;
+        
         co.dewald.guardian.dto.Permission dto = new co.dewald.guardian.dto.Permission();
         dto.setResource(permission.getResource());
         dto.setAction(permission.getAction());
@@ -80,34 +83,67 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
 
     @Override
     public co.dewald.guardian.dto.Permission find(co.dewald.guardian.dto.Permission uniqueKey) {
-        Permission permission = realm.findPermissionBy(uniqueKey.getResource(), uniqueKey.getAction());
+        Permission permission = findPermission(uniqueKey.getResource(), uniqueKey.getAction());
         return MODEL2DTO.apply(permission);
     }
 
     @Override
-    public void create(co.dewald.guardian.dto.Permission dto) {
-        realm.create(DTO2MODEL.apply(dto));
+    public boolean create(co.dewald.guardian.dto.Permission dto) {
+        try {
+            realm.create(DTO2MODEL.apply(dto));
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
-    public void update(co.dewald.guardian.dto.Permission id, co.dewald.guardian.dto.Permission dto) {
-        Permission permission = realm.findPermissionBy(id.getResource(), id.getAction());
-        permission.setResource(dto.getResource());
-        permission.setAction(dto.getAction());
-        permission.setActive(dto.isActive());
-        permission.setBypass(dto.isBypass());
+    public boolean update(co.dewald.guardian.dto.Permission id, co.dewald.guardian.dto.Permission dto) {
+        Permission permission = findPermission(id.getResource(), id.getAction());
+        if (permission == null) return false;
         
-        realm.update(permission);
+        try {
+            permission.setResource(dto.getResource());
+            permission.setAction(dto.getAction());
+            permission.setActive(dto.isActive());
+            permission.setBypass(dto.isBypass());
+            
+            realm.update(permission);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
-    public void delete(co.dewald.guardian.dto.Permission id) {
-        Permission permission = realm.findPermissionBy(id.getResource(), id.getAction());
-        realm.remove(permission);
+    public boolean delete(co.dewald.guardian.dto.Permission id) {
+        Permission permission = findPermission(id.getResource(), id.getAction());
+        if (permission == null) return false;
+        
+        try {
+            realm.remove(permission);
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
     }
 
     @Override
-    public void link(boolean link, co.dewald.guardian.dto.Permission permission, co.dewald.guardian.dto.Role role) {
-        realm.linkRolePermission(link, role.getGroup(), permission.getResource(), permission.getAction());
+    public boolean link(boolean link, co.dewald.guardian.dto.Permission permission, co.dewald.guardian.dto.Role role) {
+        try {
+            realm.linkRolePermission(link, role.getGroup(), permission.getResource(), permission.getAction());
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+    
+    @Grant(check = false)
+    Permission findPermission(String resource, String action) {
+        try {
+            return realm.findPermissionBy(resource, action);
+        } catch (Exception e) {
+            return null;
+        }
     }
 }
