@@ -12,7 +12,7 @@ import co.dewald.guardian.dto.User;
 /**
  * @author Dewald Pretorius
  */
-public interface UserDAO extends DAO<User, String> {
+public interface UserDAO extends DAO<User> {
 
     List<User> fetchBy(Role role);
     

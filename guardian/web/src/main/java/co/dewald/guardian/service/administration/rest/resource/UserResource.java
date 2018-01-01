@@ -1,4 +1,4 @@
-package co.dewald.guardian.administration.rest.resource;
+package co.dewald.guardian.service.administration.rest.resource;
 
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;
@@ -41,7 +41,7 @@ public interface UserResource {
     Response find(@PathParam(value = "username") String username);
 
     @DELETE @Path("{username}")
-    void delete(@PathParam(value = "username") String username);
+    Response delete(@PathParam(value = "username") String username);
 
     @PUT @Path("{username}")
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})

@@ -1,4 +1,4 @@
-package co.dewald.guardian.administration.rest;
+package co.dewald.guardian.service.gateway.rest;
 
 
 import java.util.HashSet;
@@ -11,15 +11,13 @@ import javax.ws.rs.core.Application;
 /**
  * @author Dewald Pretorius
  */
-@ApplicationPath("administration")
-public class AdminAPI extends Application {
+@ApplicationPath("gateway")
+public class GatewayAPI extends Application {
 
     @Override
     public Set<Class<?>> getClasses() {
         Set<Class<?>> resources = new HashSet<>();
-        resources.add(Users.class);
-        resources.add(Roles.class);
-        resources.add(Permissions.class);
+        resources.add(GuardianResource.class);
         
         return resources;
     }

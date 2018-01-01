@@ -1,53 +1,45 @@
-package co.dewald.guardian.administration.rest;
+package co.dewald.guardian.service.administration.rest;
 
 
 import java.util.List;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.Status;
 
 import co.dewald.guardian.admin.dao.UserDAO;
-import co.dewald.guardian.administration.rest.resource.PermissionResource;
-import co.dewald.guardian.administration.rest.resource.RoleResource;
-import co.dewald.guardian.administration.rest.resource.UserResource;
 import co.dewald.guardian.dto.User;
+import co.dewald.guardian.service.administration.rest.resource.PermissionResource;
+import co.dewald.guardian.service.administration.rest.resource.RoleResource;
+import co.dewald.guardian.service.administration.rest.resource.UserResource;
+import co.dewald.guardian.service.rest.Resource;
 
 
 /**
  * @author Dewald Pretorius
  *
  */
-public class Users implements UserResource {
+public class Users extends Resource<User> implements UserResource {
     
     @Context ResourceContext resourceContext;
     @EJB UserDAO userDAO;
     
     Response roleResponse;
     Response permissionResponse;
+    
+    @PostConstruct
+    @Override
+    protected void initDAO() {
+        dao = userDAO;
+    }
 
     @Override
     public List<User> fetch() {
         return userDAO.fetch();
     }
     
-    @Override
-    public Response find(String username) {
-        User user =  userDAO.find(username);
-        if (user == null) return Response.status(Status.NOT_FOUND).build();
-        
-        return Response.ok(user).build();
-    }
-
-    @Override
-    public void delete(String username) {
-        
-        
-        userDAO.delete(username);
-    }
-
     @Override
     public void update(String username, User user) {
         userDAO.update(username, user);

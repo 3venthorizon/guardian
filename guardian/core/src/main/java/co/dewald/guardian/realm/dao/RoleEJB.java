@@ -39,14 +39,14 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, Ro
         if (model == null) return null;
         
         co.dewald.guardian.dto.Role dto = new co.dewald.guardian.dto.Role();
-        dto.setGroup(model.getGroup());
+        dto.setId(model.getGroup());
         
         return dto;
     };
     
     static final Function<co.dewald.guardian.dto.Role, Role> DTO2MODEL = dto -> {
         Role role = new Role();
-        role.setGroup(dto.getGroup());
+        role.setGroup(dto.getId());
         
         return role;
     };
@@ -65,7 +65,7 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, Ro
     @Override
     public List<co.dewald.guardian.dto.Role> fetchBy(User user) {
         TypedQuery<Role> query = em.createNamedQuery(Role.QUERY_BY_SUBJECT, Role.class);
-        query.setParameter(PARAM_USERNAME, user.getUsername());
+        query.setParameter(PARAM_USERNAME, user.getId());
         
         return fetch(query);
     }
@@ -86,9 +86,9 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, Ro
     }
 
     @Override
-    public boolean delete(String group) {
+    public Boolean delete(String group) {
         Role role = findRole(group);
-        if (role == null) return false;
+        if (role == null) return null;
         
         try {
             realm.remove(role);
@@ -99,12 +99,12 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, Ro
     }
 
     @Override
-    public boolean update(String group, co.dewald.guardian.dto.Role dto) {
+    public Boolean update(String group, co.dewald.guardian.dto.Role dto) {
         Role role = findRole(group);
-        if (role == null) return false;
+        if (role == null) return null;
         
         try {
-            role.setGroup(dto.getGroup());
+            role.setGroup(dto.getId());
             
             realm.update(role);
             return true;
@@ -114,19 +114,19 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, Ro
     }
 
     @Override
-    public boolean create(co.dewald.guardian.dto.Role dto) {
+    public String create(co.dewald.guardian.dto.Role dto) {
         try {
             realm.create(DTO2MODEL.apply(dto));
-            return true;
+            return dto.getId();
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 
     @Override
     public boolean link(boolean link, co.dewald.guardian.dto.Role dto, User user) {
         try {
-            realm.linkUserRole(link, user.getUsername(), dto.getGroup());
+            realm.linkUserRole(link, user.getId(), dto.getId());
             return true;
         } catch (Exception e) {
             return false;
@@ -136,7 +136,7 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, Ro
     @Override
     public boolean link(boolean link, co.dewald.guardian.dto.Role dto, Permission permission) {
         try {
-            realm.linkRolePermission(link, dto.getGroup(), permission.getResource(), permission.getAction());
+            realm.linkRolePermission(link, dto.getId(), permission.getResource(), permission.getAction());
             return true;
         } catch (Exception e) {
             return false;

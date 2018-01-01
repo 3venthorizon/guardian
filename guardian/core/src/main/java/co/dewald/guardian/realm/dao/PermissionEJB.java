@@ -68,7 +68,7 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     @Override
     public List<co.dewald.guardian.dto.Permission> fetchBy(co.dewald.guardian.dto.Role role) {
         TypedQuery<Permission> query = em.createNamedQuery(Permission.QUERY_BY_ROLE, Permission.class);
-        query.setParameter(Role.PARAM_ROLE, role.getGroup());
+        query.setParameter(Role.PARAM_ROLE, role.getId());
         
         return fetch(query);
     }
@@ -76,14 +76,14 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     @Override
     public List<co.dewald.guardian.dto.Permission> fetchBy(User user) {
         TypedQuery<Permission> query = em.createNamedQuery(Permission.QUERY_BY_SUBJECT, Permission.class);
-        query.setParameter(Subject.PARAM_USERNAME, user.getUsername());
+        query.setParameter(Subject.PARAM_USERNAME, user.getId());
         
         return fetch(query);
     }
 
     @Override
-    public co.dewald.guardian.dto.Permission find(co.dewald.guardian.dto.Permission uniqueKey) {
-        Permission permission = findPermission(uniqueKey.getResource(), uniqueKey.getAction());
+    public co.dewald.guardian.dto.Permission find(co.dewald.guardian.dto.Permission id) {
+        Permission permission = findPermission(id.getResource(), id.getAction());
         return MODEL2DTO.apply(permission);
     }
 
@@ -98,9 +98,9 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     }
 
     @Override
-    public boolean update(co.dewald.guardian.dto.Permission id, co.dewald.guardian.dto.Permission dto) {
+    public Boolean update(co.dewald.guardian.dto.Permission id, co.dewald.guardian.dto.Permission dto) {
         Permission permission = findPermission(id.getResource(), id.getAction());
-        if (permission == null) return false;
+        if (permission == null) return null;
         
         try {
             permission.setResource(dto.getResource());
@@ -116,9 +116,9 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     }
 
     @Override
-    public boolean delete(co.dewald.guardian.dto.Permission id) {
+    public Boolean delete(co.dewald.guardian.dto.Permission id) {
         Permission permission = findPermission(id.getResource(), id.getAction());
-        if (permission == null) return false;
+        if (permission == null) return null;
         
         try {
             realm.remove(permission);
@@ -131,7 +131,7 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     @Override
     public boolean link(boolean link, co.dewald.guardian.dto.Permission permission, co.dewald.guardian.dto.Role role) {
         try {
-            realm.linkRolePermission(link, role.getGroup(), permission.getResource(), permission.getAction());
+            realm.linkRolePermission(link, role.getId(), permission.getResource(), permission.getAction());
             return true;
         } catch (Exception e) {
             return false;

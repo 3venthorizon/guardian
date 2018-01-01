@@ -1,4 +1,4 @@
-package co.dewald.guardian.administration.rest;
+package co.dewald.guardian.service.administration.rest;
 
 
 import java.util.List;
@@ -9,10 +9,10 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 
 import co.dewald.guardian.admin.dao.RoleDAO;
-import co.dewald.guardian.administration.rest.resource.PermissionResource;
-import co.dewald.guardian.administration.rest.resource.RoleResource;
-import co.dewald.guardian.administration.rest.resource.UserResource;
 import co.dewald.guardian.dto.Role;
+import co.dewald.guardian.service.administration.rest.resource.PermissionResource;
+import co.dewald.guardian.service.administration.rest.resource.RoleResource;
+import co.dewald.guardian.service.administration.rest.resource.UserResource;
 
 
 /**

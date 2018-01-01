@@ -3,36 +3,57 @@
 	xmlns:tns="http://www.example.org/guardian" elementFormDefault="qualified">
 	
     <complexType name="User">
-    	<sequence>
-    		<element name="password" type="string"></element>
-    	</sequence>
-    	<attribute name="username" use="required">
+    	<complexContent>
+    		<extension base="tns:DTO">
+    			<sequence>
+    				<element name="password" type="string" />
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="Role">
+    	<complexContent>
+            <extension base="tns:DTO">
+            </extension>
+        </complexContent>
+    </complexType>
+
+	<complexType name="Permission">
+		<complexContent>
+			<extension base="tns:DTO">
+				<sequence>
+					<element name="resource" minOccurs="1" maxOccurs="1">
+						<simpleType>
+							<restriction base="string">
+								<maxLength value="100"></maxLength>
+								<whiteSpace value="collapse"></whiteSpace>
+							</restriction>
+						</simpleType>
+					</element>
+					<element name="action" minOccurs="1" maxOccurs="1">
+						<simpleType>
+							<restriction base="string">
+								<maxLength value="100"></maxLength>
+								<whiteSpace value="collapse"></whiteSpace>
+							</restriction>
+						</simpleType>
+					</element>
+					<element name="active" type="boolean" minOccurs="0" maxOccurs="1" />
+					<element name="bypass" type="boolean" minOccurs="0" maxOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+    
+
+    <complexType name="DTO">
+    	<attribute name="id">
     		<simpleType>
     			<restriction base="string">
-    				<maxLength value="100"></maxLength>
     				<whiteSpace value="collapse"></whiteSpace>
     			</restriction>
     		</simpleType>
     	</attribute>
     </complexType>
-
-    <complexType name="Role">
-    	<attribute name="group" use="required">
-    		<simpleType>
-    			<restriction base="string">
-    				<maxLength value="100"></maxLength>
-    			</restriction>
-    		</simpleType>
-    	</attribute>
-    </complexType>
-
-    <complexType name="Permission">
-    	<sequence>
-    		<element name="active" type="boolean" minOccurs="0" maxOccurs="1" />
-    		<element name="bypass" type="boolean" minOccurs="0" maxOccurs="1" />
-    	</sequence>
-    	<attribute name="resource" type="string" />
-    	<attribute name="action" type="string" />
-    </complexType>
-
 </schema>

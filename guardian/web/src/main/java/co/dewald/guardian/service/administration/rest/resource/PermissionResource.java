@@ -1,4 +1,4 @@
-package co.dewald.guardian.administration.rest.resource;
+package co.dewald.guardian.service.administration.rest.resource;
 
 
 import static javax.ws.rs.core.MediaType.APPLICATION_JSON;

@@ -40,14 +40,15 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
         if (subject == null) return null;
         
         User user = new User();
-        user.setUsername(subject.getUsername());
+        user.setId(subject.getUsername());
+        //don't populate hashed password here!
         
         return user;
     };
     
     static final Function<User, Subject> DTO2MODEL = dto -> {
         Subject subject = new Subject();
-        subject.setUsername(dto.getUsername());
+        subject.setUsername(dto.getId());
         subject.setPassword(dto.getPassword());
         
         return subject;
@@ -67,7 +68,7 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
     @Override
     public List<User> fetchBy(Role role) {
         TypedQuery<Subject> query = em.createNamedQuery(Subject.QUERY_BY_ROLE, Subject.class);
-        query.setParameter(PARAM_ROLE, role.getGroup());
+        query.setParameter(PARAM_ROLE, role.getId());
         
         return fetch(query);
     }
@@ -88,9 +89,9 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
     }
 
     @Override
-    public boolean delete(String username) {
+    public Boolean delete(String username) {
         Subject subject = findSubject(username);
-        if (subject == null) return false;
+        if (subject == null) return null;
         
         try {
             realm.remove(subject);
@@ -101,12 +102,12 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
     }
 
     @Override
-    public boolean update(String username, User user) {
+    public Boolean update(String username, User user) {
         Subject subject = findSubject(username);
-        if (subject == null) return false;
+        if (subject == null) return null;
         
         try {
-            subject.setUsername(user.getUsername());
+            subject.setUsername(user.getId());
             subject.setPassword(user.getPassword());
             
             realm.update(subject);
@@ -117,19 +118,19 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
     }
 
     @Override
-    public boolean create(User user) {
+    public String create(User user) {
         try {
             realm.create(DTO2MODEL.apply(user));
-            return true;
+            return user.getId();
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 
     @Override
     public boolean link(boolean link, User user, Role roleGroup) {
         try {
-            realm.linkUserRole(link, user.getUsername(), roleGroup.getGroup());
+            realm.linkUserRole(link, user.getId(), roleGroup.getId());
             return true;
         } catch (Exception e) {
             return false;

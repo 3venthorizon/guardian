@@ -1,4 +1,4 @@
-package co.dewald.guardian.administration.rest;
+package co.dewald.guardian.service.administration.rest;
 
 
 /**

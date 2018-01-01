@@ -1,4 +1,4 @@
-package co.dewald.guardian.gateway.rest;
+package co.dewald.guardian.service.gateway.rest;
 
 
 import static javax.ws.rs.core.Response.Status.*;
