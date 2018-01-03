@@ -45,6 +45,4 @@ public interface PermissionDAO extends DAO<Permission> {
 
     boolean link(boolean link, Permission permission, Role role);
 
-
-
 }

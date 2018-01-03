@@ -1,29 +1,29 @@
 package co.dewald.guardian.service.administration.rest;
 
 
-import java.util.List;
-
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.UriInfo;
 
 import co.dewald.guardian.admin.dao.UserDAO;
 import co.dewald.guardian.dto.User;
 import co.dewald.guardian.service.administration.rest.resource.PermissionResource;
 import co.dewald.guardian.service.administration.rest.resource.RoleResource;
 import co.dewald.guardian.service.administration.rest.resource.UserResource;
-import co.dewald.guardian.service.rest.Resource;
+import co.dewald.guardian.service.rest.BaseResource;
 
 
 /**
  * @author Dewald Pretorius
  *
  */
-public class Users extends Resource<User> implements UserResource {
+public class Users extends BaseResource<User> implements UserResource {
     
     @Context ResourceContext resourceContext;
+    @Context UriInfo uriInfo;
     @EJB UserDAO userDAO;
     
     Response roleResponse;
@@ -36,18 +36,8 @@ public class Users extends Resource<User> implements UserResource {
     }
 
     @Override
-    public List<User> fetch() {
-        return userDAO.fetch();
-    }
-    
-    @Override
-    public void update(String username, User user) {
-        userDAO.update(username, user);
-    }
-
-    @Override
-    public void create(User user) {
-        userDAO.create(user);
+    protected UriInfo getUriInfo() {
+        return uriInfo;
     }
 
     @Override

@@ -88,12 +88,12 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     }
 
     @Override
-    public boolean create(co.dewald.guardian.dto.Permission dto) {
+    public String create(co.dewald.guardian.dto.Permission dto) {
         try {
             realm.create(DTO2MODEL.apply(dto));
-            return true;
+            return dto.getResource() + ':' + dto.getAction();
         } catch (Exception e) {
-            return false;
+            return null;
         }
     }
 
