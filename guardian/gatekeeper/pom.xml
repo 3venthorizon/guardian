@@ -17,6 +17,27 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-compiler-plugin</artifactId>
 			</plugin>
+			
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>jaxb2-maven-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>guardian-domain</id>
+                        <goals>
+                            <goal>xjc</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>src/main/resources/xsd</source>
+                            </sources>
+                            <outputDirectory>src/main/generated/guardian</outputDirectory>
+                            <packageName>co.dewald.guardian.dto</packageName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            
 			<plugin>
 				<groupId>org.jacoco</groupId>
 				<artifactId>jacoco-maven-plugin</artifactId>

@@ -1,7 +1,6 @@
 package co.dewald.guardian.realm.dao;
 
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -35,47 +34,6 @@ public interface RealmDAO {
     <RE extends RealmEntity> List<RE> fetchAll(Class<RE> entityClass, Set<Long> primaryKeys);
 
     /**
-     * Fetch permissions by resource.
-     * 
-     * @param resource
-     * @return permission list
-     */
-    List<Permission> fetchPermissionsByResource(String resource);
-
-    /**
-     * Fetch roles by the supplied list of groups.
-     * 
-     * @param groups
-     * @return role list
-     */
-    List<Role> fetchRolesBy(Collection<String> groups);
-
-    /**
-     * Fetch roles associated with the permission.
-     * 
-     * @param resource
-     * @param action
-     * @return role list
-     */
-    List<Role> fetchRolesByPermission(String resource, String action);
-
-    /**
-     * Fetch subjects by the supplied list of usernames.
-     * 
-     * @param usernames
-     * @return subject list
-     */
-    List<Subject> fetchSubjectsBy(Collection<String> usernames);
-
-    /**
-     * Fetch subjects associated with the role.
-     * 
-     * @param group
-     * @return subject list
-     */
-    List<Subject> fetchSubjectsByRole(String group);
-
-    /**
      * Wrapper for the entity manager.
      * 
      * @param entityClass
@@ -87,10 +45,8 @@ public interface RealmDAO {
     /**
      * Finds the {@link Subject} by it's username.
      * 
-     * @param username
-     *            credentials
-     * @param password
-     *            credentials
+     * @param username credentials
+     * @param password credentials
      * @return subject
      */
     Subject findSubjectBy(String username);
@@ -120,7 +76,7 @@ public interface RealmDAO {
      * @return permission
      */
     Permission loadPermission(String resource, String action);
-
+    
     /**
      * Removes the realm entity.
      * 
@@ -135,5 +91,24 @@ public interface RealmDAO {
      * @return merged entity
      */
     <RE extends RealmEntity> RE update(RE realmEntity);
+
+    /**
+     * Manages the association between a {@link Subject} and it's {@link Role}s.
+     *  
+     * @param link associates a {@link Subject} to a {@link Role} when true. 
+     * @param username
+     * @param roleGroup
+     */
+    void linkUserRole(boolean link, String username, String roleGroup);
+
+    /**
+     * Manages the association between a {@link Role} and it's {@link Permission}s.
+     * 
+     * @param link
+     * @param roleGroup
+     * @param resource
+     * @param action
+     */
+    void linkRolePermission(boolean link, String roleGroup, String resource, String action);
 
 }

@@ -16,23 +16,25 @@ import java.util.Set;
  */
 @NamedQueries({ 
     @NamedQuery(name = Role.QUERY_ALL, query = Role.JPQL_ALL),
-    @NamedQuery(name = Role.QUERY_ROLES, query = Role.JPQL_ROLES),
+    @NamedQuery(name = Role.QUERY_ROLE, query = Role.JPQL_BY_ROLE),
+    @NamedQuery(name = Role.QUERY_BY_SUBJECT, query = Role.JPQL_BY_SUBJECT),
     @NamedQuery(name = Role.QUERY_BY_PERMISSION, query = Role.JPQL_BY_PERMISSION) })
 @Entity
 @Table(name = "role")
 public class Role extends RealmEntity implements Serializable {
+    public static final String PARAM_ROLE = "group";
+
     public static final String QUERY_ALL = "Role[all]";
-    public static final String JPQL_ALL = "SELECT r FROM Role r";
+    public static final String QUERY_ROLE = "Role[group]";
+    public static final String QUERY_BY_SUBJECT = "Role[subject]";
+    public static final String QUERY_BY_PERMISSION = "Role[resource,action]";
+
+    static final String WHERE_ROLE = "WHERE r.group = :" + PARAM_ROLE;
     
-    public static final String QUERY_ROLES = "Role[group]";
-    public static final String JPQL_ROLES = "SELECT r FROM Role r WHERE r.group IN :groups";
-    public static final String PARAM_ROLES = "groups";
-    
-    public static final String QUERY_BY_PERMISSION = "Role[permission]";
-    public static final String JPQL_BY_PERMISSION =  
-            "SELECT r FROM Role r JOIN r.permissions p WHERE p.resource = :resource AND p.action = :action";
-    public static final String PARAM_RESOURCE = "resource";
-    public static final String PARAM_ACTION = "action";
+    static final String JPQL_ALL = "SELECT r FROM Role r";
+    static final String JPQL_BY_ROLE = "SELECT r FROM Role r " + WHERE_ROLE;
+    static final String JPQL_BY_SUBJECT = "SELECT r FROM Subject s JOIN s.roles r " + Subject.WHERE_SUBJECT;
+    static final String JPQL_BY_PERMISSION = "SELECT r FROM Role r JOIN r.permissions p " + Permission.WHERE_PERMISSION;
     
     static final long serialVersionUID = 7943483115626295591L;
 

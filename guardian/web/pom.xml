@@ -50,6 +50,12 @@
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
+
+		<dependency>
+		    <groupId>javax.json.bind</groupId>
+		    <artifactId>javax.json.bind-api</artifactId>
+		    <version>1.0</version>
+		</dependency>
 	</dependencies>
 
 </project>

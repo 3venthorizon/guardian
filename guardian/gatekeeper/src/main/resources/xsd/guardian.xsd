@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<schema xmlns="http://www.w3.org/2001/XMLSchema" targetNamespace="http://www.example.org/guardian"
+	xmlns:tns="http://www.example.org/guardian" elementFormDefault="qualified">
+	
+    <complexType name="User">
+    	<complexContent>
+    		<extension base="tns:DTO">
+    			<sequence>
+    				<element name="password" type="string" />
+    			</sequence>
+    		</extension>
+    	</complexContent>
+    </complexType>
+
+    <complexType name="Role">
+    	<complexContent>
+            <extension base="tns:DTO">
+            </extension>
+        </complexContent>
+    </complexType>
+
+	<complexType name="Permission">
+		<complexContent>
+			<extension base="tns:DTO">
+				<sequence>
+					<element name="resource" minOccurs="1" maxOccurs="1">
+						<simpleType>
+							<restriction base="string">
+								<maxLength value="100"></maxLength>
+								<whiteSpace value="collapse"></whiteSpace>
+							</restriction>
+						</simpleType>
+					</element>
+					<element name="action" minOccurs="1" maxOccurs="1">
+						<simpleType>
+							<restriction base="string">
+								<maxLength value="100"></maxLength>
+								<whiteSpace value="collapse"></whiteSpace>
+							</restriction>
+						</simpleType>
+					</element>
+					<element name="active" type="boolean" minOccurs="0" maxOccurs="1" />
+					<element name="bypass" type="boolean" minOccurs="0" maxOccurs="1" />
+				</sequence>
+			</extension>
+		</complexContent>
+	</complexType>
+    
+
+    <complexType name="DTO">
+    	<attribute name="id">
+    		<simpleType>
+    			<restriction base="string">
+    				<whiteSpace value="collapse"></whiteSpace>
+    			</restriction>
+    		</simpleType>
+    	</attribute>
+    </complexType>
+</schema>

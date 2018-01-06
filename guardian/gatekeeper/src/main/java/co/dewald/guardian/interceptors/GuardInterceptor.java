@@ -233,7 +233,7 @@ public class GuardInterceptor {
 
         for (Class<?> iclass : clazz.getInterfaces()) {
             grant = iclass.getAnnotation(Grant.class);
-            if (grant != null) return createGrant(iclass.getName(), grant);
+            if (grant != null) return createGrant(clazz.getName(), grant);
         }
 
         return createGrant(clazz.getName(), true, false, "");
