@@ -19,17 +19,15 @@ import co.dewald.guardian.dao.DAO;
  */
 public abstract class BaseResource<DTO extends co.dewald.guardian.dto.DTO> implements Resource<DTO> {
     
-    public static final String RESOURCE_404 = "Resource ID: ";
+    public static final String RESOURCE_ID = "Resource ID: ";
     
-    protected DAO<DTO> dao;
-    
-    protected abstract void initDAO();
+    protected abstract DAO<DTO> getDAO();
     
     protected abstract UriInfo getUriInfo();
     
     @Override
     public Response fetch() {
-        List<DTO> dtoList = dao.fetch();
+        List<DTO> dtoList = getDAO().fetch();
         if (dtoList.isEmpty()) return Response.noContent().build();
 
         GenericEntity<List<DTO>> genericDTOList = new GenericEntity<List<DTO>>(dtoList) {};
@@ -38,16 +36,16 @@ public abstract class BaseResource<DTO extends co.dewald.guardian.dto.DTO> imple
     
     @Override
     public Response find(String id) {
-        DTO dto = dao.find(id);
-        if (dto == null) throw new NotFoundException(RESOURCE_404 + id);
+        DTO dto = getDAO().find(id);
+        if (dto == null) throw new NotFoundException(RESOURCE_ID + id);
         
         return Response.ok(dto).build();
     }
     
     @Override
     public Response delete(String id) {
-        Boolean success = dao.delete(id);
-        if (success == null) throw new NotFoundException(RESOURCE_404 + id);
+        Boolean success = getDAO().delete(id);
+        if (success == null) throw new NotFoundException(RESOURCE_ID + id);
         if (Boolean.FALSE.equals(success)) throw new InternalServerErrorException("Unable to Delete Resource ID:" + id);
         
         return Response.noContent().build();
@@ -55,8 +53,8 @@ public abstract class BaseResource<DTO extends co.dewald.guardian.dto.DTO> imple
     
     @Override
     public Response update(String id, DTO dto) {
-        Boolean success = dao.update(id, dto);
-        if (success == null) throw new NotFoundException(RESOURCE_404 + id);
+        Boolean success = getDAO().update(id, dto);
+        if (success == null) throw new NotFoundException(RESOURCE_ID + id);
         if (Boolean.FALSE.equals(success)) throw new InternalServerErrorException("Unable to Update Resource ID:" + id);
         
         return Response.noContent().build();
@@ -64,7 +62,7 @@ public abstract class BaseResource<DTO extends co.dewald.guardian.dto.DTO> imple
     
     @Override
     public Response create(DTO dto) {
-        String id = dao.create(dto);
+        String id = getDAO().create(dto);
         if (id == null) throw new InternalServerErrorException("Unable to create Resource");
         
         URI location = getUriInfo().getAbsolutePathBuilder().path(id).build();

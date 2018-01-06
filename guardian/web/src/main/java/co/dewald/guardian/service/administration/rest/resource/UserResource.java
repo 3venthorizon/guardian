@@ -38,21 +38,26 @@ public interface UserResource extends Resource<User> {
 
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
+    @Override
     Response fetch();
     
     @GET @Path(PATH_ID)
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
+    @Override
     Response find(@PathParam(value = "username") String username);
 
     @DELETE @Path(PATH_ID)
+    @Override
     Response delete(@PathParam(value = "username") String username);
 
     @PUT @Path(PATH_ID)
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
+    @Override
     Response update(@PathParam(value = "username") String username, User user);
 
     @POST
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
+    @Override
     Response create(User user);
 
 }

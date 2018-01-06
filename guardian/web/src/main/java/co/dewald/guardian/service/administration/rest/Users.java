@@ -1,7 +1,6 @@
 package co.dewald.guardian.service.administration.rest;
 
 
-import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
@@ -9,6 +8,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import co.dewald.guardian.admin.dao.UserDAO;
+import co.dewald.guardian.dao.DAO;
 import co.dewald.guardian.dto.User;
 import co.dewald.guardian.service.administration.rest.resource.PermissionResource;
 import co.dewald.guardian.service.administration.rest.resource.RoleResource;
@@ -29,10 +29,9 @@ public class Users extends BaseResource<User> implements UserResource {
     Response roleResponse;
     Response permissionResponse;
     
-    @PostConstruct
     @Override
-    protected void initDAO() {
-        dao = userDAO;
+    protected DAO<User> getDAO() {
+        return userDAO;
     }
 
     @Override

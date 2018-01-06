@@ -8,6 +8,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
 import co.dewald.guardian.admin.dao.RoleDAO;
+import co.dewald.guardian.dao.DAO;
 import co.dewald.guardian.dto.Role;
 import co.dewald.guardian.service.administration.rest.resource.PermissionResource;
 import co.dewald.guardian.service.administration.rest.resource.RoleResource;
@@ -29,8 +30,8 @@ public class Roles extends BaseResource<Role> implements RoleResource {
     Response permissionResponse;
     
     @Override
-    protected void initDAO() {
-        dao = roleDAO;
+    protected DAO<Role> getDAO() {
+        return roleDAO;
     }
 
     @Override
@@ -40,13 +41,17 @@ public class Roles extends BaseResource<Role> implements RoleResource {
 
     @Override
     public UserResource linkUserResource(String group) {
-        find(group);
-        return resourceContext.getResource(Users.class);
+        Users users = resourceContext.getResource(Users.class);
+        users.roleResponse = find(group);
+        
+        return users;
     }
 
     @Override
     public PermissionResource linkPermissions(String group) {
-        find(group);
-        return resourceContext.getResource(Permissions.class);
+        Permissions permissions = resourceContext.getResource(Permissions.class);
+        permissions.roleResponse = find(group);
+        
+        return permissions;
     }
 }

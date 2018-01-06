@@ -16,6 +16,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.Response;
 
 import co.dewald.guardian.dto.Permission;
+import co.dewald.guardian.service.rest.Resource;
 
 
 /**
@@ -23,13 +24,15 @@ import co.dewald.guardian.dto.Permission;
  * @author Dewald Pretorius
  */
 @Path("permissions")
-public interface PermissionResource {
+public interface PermissionResource extends Resource<Permission> {
+    
+    public static final String PATH_ID = "{resource}:{action}";
 
-    @Path("{resource}:{action}/users")
+    @Path(PATH_ID + "/users")
     UserResource linkUsers(@PathParam(value = "resource") String resource, 
                            @PathParam(value = "action") String action);
 
-    @Path("{resource}:{action}/roles")
+    @Path(PATH_ID + "/roles")
     RoleResource linkRoles(@PathParam(value = "resource") String resource, 
                            @PathParam(value = "action") String action);
 
@@ -37,22 +40,35 @@ public interface PermissionResource {
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     Response fetch();
 
-    @GET @Path("{resource}:{action}")
+    @GET @Path(PATH_ID)
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
-    Response find(@PathParam(value = "resource") String resource, 
-                    @PathParam(value = "action") String action);
+    default Response find(@PathParam(value = "resource") String resource, 
+                          @PathParam(value = "action") String action) {
+        String id = composeID(resource, action);
+        return find(id);
+    }
 
-    @DELETE @Path("{resource}:{action}")
-    Response delete(@PathParam(value = "resource") String resource, 
-                    @PathParam(value = "action") String action);
+    @DELETE @Path(PATH_ID)
+    default Response delete(@PathParam(value = "resource") String resource, 
+                            @PathParam(value = "action") String action) {
+        String id = composeID(resource, action);
+        return delete(id);
+    }
 
-    @PUT
+    @PUT @Path(PATH_ID)
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
-    Response update(@PathParam(value = "resource") String resource, 
-                    @PathParam(value = "action") String action, Permission permission);
+    default Response update(@PathParam(value = "resource") String resource, 
+                    @PathParam(value = "action") String action, Permission permission) {
+        String id = composeID(resource, action);
+        return update(id, permission);
+    }
 
     @POST
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
+    @Override
     Response create(Permission permission);
-
+    
+    default String composeID(String resource, String action) {
+        return resource + ':' + action;
+    }
 }

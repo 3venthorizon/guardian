@@ -25,28 +25,35 @@ import co.dewald.guardian.service.rest.Resource;
 @Path("roles")
 public interface RoleResource extends Resource<Role> {
     
-    @Path("{group}/users")
+    public static final String PATH_ID = "{group}";
+    
+    @Path(PATH_ID + "/users")
     UserResource linkUserResource(@PathParam(value = "group") String group);
 
-    @Path("{group}/permissions")
+    @Path(PATH_ID + "/permissions")
     PermissionResource linkPermissions(@PathParam(value = "group") String group);
 
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
+    @Override
     Response fetch();
 
-    @GET @Path("{group}")
+    @GET @Path(PATH_ID)
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
+    @Override
     Response find(@PathParam(value = "group") String group);
 
-    @DELETE @Path("{group}")
+    @DELETE @Path(PATH_ID)
+    @Override
     Response delete(@PathParam(value = "group") String group);
 
-    @PUT @Path("{group}")
+    @PUT @Path(PATH_ID)
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
+    @Override
     Response update(@PathParam(value = "group") String group, Role role);
 
     @POST
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
+    @Override
     Response create(Role role);
 }
