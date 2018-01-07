@@ -9,10 +9,10 @@ import co.dewald.guardian.dto.DTO;
 /**
  * Interface for Data Access Objects.
  * 
- * @author Dewald Pretorius
- *
  * @param <DO> Data Object
  * @param <ID> ID identifier for Data Object
+ * 
+ * @author Dewald Pretorius
  */
 public interface DAO<DO extends DTO> {
     
