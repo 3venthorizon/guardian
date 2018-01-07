@@ -6,6 +6,7 @@ import java.util.List;
 
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -22,7 +23,7 @@ public abstract class BaseResource<DTO extends co.dewald.guardian.dto.DTO> imple
     public static final String RESOURCE_ID = "Resource ID: ";
     
     protected abstract DAO<DTO> getDAO();
-    
+    protected abstract ResourceContext getResourceContext(); 
     protected abstract UriInfo getUriInfo();
     
     @Override

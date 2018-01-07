@@ -34,6 +34,11 @@ public class Permissions extends BaseResource<Permission> implements PermissionR
     }
     
     @Override
+    protected ResourceContext getResourceContext() {
+        return resourceContext;
+    }
+    
+    @Override
     protected UriInfo getUriInfo() {
         return uriInfo;
     }

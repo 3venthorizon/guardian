@@ -33,6 +33,11 @@ public class Roles extends BaseResource<Role> implements RoleResource {
     protected DAO<Role> getDAO() {
         return roleDAO;
     }
+    
+    @Override
+    protected ResourceContext getResourceContext() {
+        return resourceContext;
+    }
 
     @Override
     protected UriInfo getUriInfo() {

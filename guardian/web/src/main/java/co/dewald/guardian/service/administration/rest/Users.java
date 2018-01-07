@@ -35,6 +35,11 @@ public class Users extends BaseResource<User> implements UserResource {
     }
 
     @Override
+    protected ResourceContext getResourceContext() {
+        return resourceContext;
+    }
+
+    @Override
     protected UriInfo getUriInfo() {
         return uriInfo;
     }
