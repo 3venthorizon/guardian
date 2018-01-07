@@ -40,7 +40,7 @@ public class Roles extends BaseResource<Role> implements RoleResource {
     }
 
     @Override
-    public UserResource linkUserResource(String group) {
+    public UserResource subUsers(String group) {
         Users users = resourceContext.getResource(Users.class);
         users.roleResponse = find(group);
         
@@ -48,7 +48,7 @@ public class Roles extends BaseResource<Role> implements RoleResource {
     }
 
     @Override
-    public PermissionResource linkPermissions(String group) {
+    public PermissionResource subPermissions(String group) {
         Permissions permissions = resourceContext.getResource(Permissions.class);
         permissions.roleResponse = find(group);
         

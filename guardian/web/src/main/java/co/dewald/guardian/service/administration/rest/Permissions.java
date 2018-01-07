@@ -39,7 +39,7 @@ public class Permissions extends BaseResource<Permission> implements PermissionR
     }
 
     @Override
-    public UserResource linkUsers(String resource, String action) {
+    public UserResource subUsers(String resource, String action) {
         Users users = resourceContext.getResource(Users.class);
         users.permissionResponse = find(resource, action);
         
@@ -47,7 +47,7 @@ public class Permissions extends BaseResource<Permission> implements PermissionR
     }
 
     @Override
-    public RoleResource linkRoles(String resource, String action) {
+    public RoleResource subRoles(String resource, String action) {
         Roles roles = resourceContext.getResource(Roles.class);
         roles.permissionResponse = find(resource, action);
         

@@ -28,10 +28,10 @@ public interface RoleResource extends Resource<Role> {
     public static final String PATH_ID = "{group}";
     
     @Path(PATH_ID + "/users")
-    UserResource linkUserResource(@PathParam(value = "group") String group);
+    UserResource subUsers(@PathParam(value = "group") String group);
 
     @Path(PATH_ID + "/permissions")
-    PermissionResource linkPermissions(@PathParam(value = "group") String group);
+    PermissionResource subPermissions(@PathParam(value = "group") String group);
 
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})

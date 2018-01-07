@@ -29,12 +29,12 @@ public interface PermissionResource extends Resource<Permission> {
     public static final String PATH_ID = "{resource}:{action}";
 
     @Path(PATH_ID + "/users")
-    UserResource linkUsers(@PathParam(value = "resource") String resource, 
-                           @PathParam(value = "action") String action);
+    UserResource subUsers(@PathParam(value = "resource") String resource, 
+                          @PathParam(value = "action") String action);
 
     @Path(PATH_ID + "/roles")
-    RoleResource linkRoles(@PathParam(value = "resource") String resource, 
-                           @PathParam(value = "action") String action);
+    RoleResource subRoles(@PathParam(value = "resource") String resource, 
+                          @PathParam(value = "action") String action);
 
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})

@@ -31,10 +31,10 @@ public interface UserResource extends Resource<User> {
     public static final String PATH_ID = "{username}";
 
     @Path(PATH_ID + "/roles")
-    RoleResource linkRoles(@PathParam(value = "username") String username);
+    RoleResource subRoles(@PathParam(value = "username") String username);
 
     @Path(PATH_ID + "/permissions")
-    PermissionResource linkPermissions(@PathParam(value = "username") String username);
+    PermissionResource subPermissions(@PathParam(value = "username") String username);
 
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
