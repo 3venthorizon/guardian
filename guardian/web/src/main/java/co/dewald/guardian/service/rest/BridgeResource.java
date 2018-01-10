@@ -18,12 +18,13 @@ import co.dewald.guardian.dao.DAO;
  * 
  * @author Dewald Pretorius
  */
-public abstract class BaseResource<DTO extends co.dewald.guardian.dto.DTO> implements Resource<DTO> {
+public abstract class BridgeResource<DTO extends co.dewald.guardian.dto.DTO> implements Resource<DTO> {
     
     public static final String RESOURCE_ID = "Resource ID: ";
     
+    protected Response supResponse;
+    
     protected abstract DAO<DTO> getDAO();
-    protected abstract ResourceContext getResourceContext(); 
     protected abstract UriInfo getUriInfo();
     
     @Override
@@ -44,12 +45,22 @@ public abstract class BaseResource<DTO extends co.dewald.guardian.dto.DTO> imple
     }
     
     @Override
+    public Response find(DTO id) {
+        return find(getDAO().getId(id));
+    }
+    
+    @Override
     public Response delete(String id) {
         Boolean success = getDAO().delete(id);
         if (success == null) throw new NotFoundException(RESOURCE_ID + id);
         if (Boolean.FALSE.equals(success)) throw new InternalServerErrorException("Unable to Delete Resource ID:" + id);
         
         return Response.noContent().build();
+    }
+    
+    @Override
+    public Response delete(DTO id) {
+        return delete(getDAO().getId(id));
     }
     
     @Override
@@ -62,11 +73,34 @@ public abstract class BaseResource<DTO extends co.dewald.guardian.dto.DTO> imple
     }
     
     @Override
+    public Response update(DTO id, DTO dto) {
+        return update(getDAO().getId(id), dto);
+    }
+    
+    @Override
     public Response create(DTO dto) {
         String id = getDAO().create(dto);
         if (id == null) throw new InternalServerErrorException("Unable to create Resource");
         
         URI location = getUriInfo().getAbsolutePathBuilder().path(id).build();
         return Response.created(location).build();
+    }
+    
+    /**
+     * Gets the Super Resource's response.
+     * 
+     * @return supResponse of supper resource or null if this resource was not a delegated
+     */
+    public Response getSupResponse() {
+        return supResponse;
+    }
+    
+    /**
+     * Sets the Super Resource's response.
+     * 
+     * @param supResponse
+     */
+    public void setSupResponse(Response supResponse) {
+        this.supResponse = supResponse;
     }
 }

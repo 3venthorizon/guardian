@@ -13,13 +13,13 @@ import co.dewald.guardian.dto.Permission;
 import co.dewald.guardian.service.administration.rest.resource.PermissionResource;
 import co.dewald.guardian.service.administration.rest.resource.RoleResource;
 import co.dewald.guardian.service.administration.rest.resource.UserResource;
-import co.dewald.guardian.service.rest.BaseResource;
+import co.dewald.guardian.service.rest.BridgeResource;
 
 
 /**
  * @author Dewald Pretorius
  */
-public class Permissions extends BaseResource<Permission> implements PermissionResource {
+public class Permissions extends BridgeResource<Permission> implements PermissionResource {
     
     @Context ResourceContext resourceContext;
     @Context UriInfo uriInfo;
@@ -31,11 +31,6 @@ public class Permissions extends BaseResource<Permission> implements PermissionR
     @Override
     protected DAO<Permission> getDAO() {
         return permissionDAO;
-    }
-    
-    @Override
-    protected ResourceContext getResourceContext() {
-        return resourceContext;
     }
     
     @Override
@@ -55,6 +50,8 @@ public class Permissions extends BaseResource<Permission> implements PermissionR
     public RoleResource subRoles(String resource, String action) {
         Roles roles = resourceContext.getResource(Roles.class);
         roles.permissionResponse = find(resource, action);
+        
+        uriInfo.
         
         return roles;
     }    

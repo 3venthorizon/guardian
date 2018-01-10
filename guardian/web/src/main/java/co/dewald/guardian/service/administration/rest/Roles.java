@@ -13,14 +13,14 @@ import co.dewald.guardian.dto.Role;
 import co.dewald.guardian.service.administration.rest.resource.PermissionResource;
 import co.dewald.guardian.service.administration.rest.resource.RoleResource;
 import co.dewald.guardian.service.administration.rest.resource.UserResource;
-import co.dewald.guardian.service.rest.BaseResource;
+import co.dewald.guardian.service.rest.BridgeResource;
 
 
 /**
  * @author Dewald Pretorius
  *
  */
-public class Roles extends BaseResource<Role> implements RoleResource {
+public class Roles extends BridgeResource<Role> implements RoleResource {
     
     @Context ResourceContext resourceContext;
     @Context UriInfo uriInfo;
@@ -32,11 +32,6 @@ public class Roles extends BaseResource<Role> implements RoleResource {
     @Override
     protected DAO<Role> getDAO() {
         return roleDAO;
-    }
-    
-    @Override
-    protected ResourceContext getResourceContext() {
-        return resourceContext;
     }
 
     @Override

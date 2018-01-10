@@ -52,6 +52,11 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, Ro
     };
     
     @Override
+    public String getId(co.dewald.guardian.dto.Role id) {
+        return id.getId();
+    }
+
+    @Override
     public Function<Role, co.dewald.guardian.dto.Role> model2dto() {
         return MODEL2DTO;
     }

@@ -17,10 +17,13 @@ public interface Resource<DTO extends co.dewald.guardian.dto.DTO> {
     Response fetch();
 
     Response find(String id);
+    Response find(DTO id);
 
     Response delete(String id);
+    Response delete(DTO id);
 
     Response update(String id, DTO dto);
+    Response update(DTO id, DTO dto);
 
     Response create(DTO dto);
 }

@@ -55,6 +55,11 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     };
 
     @Override
+    public String getId(co.dewald.guardian.dto.Permission id) {
+        return id.getResource() + ':' + id.getAction();
+    }
+
+    @Override
     public Function<Permission, co.dewald.guardian.dto.Permission> model2dto() {
         return MODEL2DTO;
     }

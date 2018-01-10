@@ -3,72 +3,71 @@ package co.dewald.guardian.dao;
 
 import java.util.List;
 
-import co.dewald.guardian.dto.DTO;
-
 
 /**
- * Interface for Data Access Objects.
+ * Interface for Data Access for Data Transfer Objects.
  * 
- * @param <DO> Data Object
- * @param <ID> ID identifier for Data Object
+ * @param <DTO> Data Transfer Object
  * 
  * @author Dewald Pretorius
  */
-public interface DAO<DO extends DTO> {
+public interface DAO<DTO extends co.dewald.guardian.dto.DTO> {
+    
+    String getId(DTO id);
     
     /**
-     * Fetches Data Objects.
+     * Fetches DTOs.
      * 
-     * @return list of Data Objects
+     * @return list of DTOs
      */
-    List<DO> fetch();
+    List<DTO> fetch();
     
     /**
-     * Finds a Data Object by its ID.
+     * Finds a DTO by its ID.
      * 
      * @param id 
-     * @return Data Object or null when not found.
+     * @return DTO or null when not found.
      */
-    DO find(String id);
+    DTO find(String id);
     
-    default DO find(DO id) {
-        return find(id.getId());
+    default DTO find(DTO id) {
+        return find(getId(id));
     }
     
     /**
-     * Deletes the underlying Data Object by ID.
+     * Deletes the underlying DTO by ID.
      * 
      * @param id
-     * @return success or null when the Data Object was not found.
+     * @return success or null when the DTO was not found.
      */
     Boolean delete(String id);
     
-    default Boolean delete(DO id) {
-        return delete(id.getId());
+    default Boolean delete(DTO id) {
+        return delete(getId(id));
     }
 
     /**
-     * Updates the Data Object with the following steps:
+     * Updates the DTO with the following steps:
      * <ol>
-     * <li>Find the underlying Data Object by its ID.
-     * <li>Updates the above object with the parameter Data Object.
+     * <li>Find the underlying DTO by its ID.
+     * <li>Updates the above object with the parameter DTO.
      * </ol>
      * 
      * @param id
-     * @param dataObject
-     * @return success or null when the Data Object was not found.
+     * @param dto
+     * @return success or null when the DTO was not found.
      */
-    Boolean update(String id, DO dataObject);
+    Boolean update(String id, DTO dto);
     
-    default Boolean update(DO id, DO dataObject) {
-        return update(id.getId(), dataObject);
+    default Boolean update(DTO id, DTO dto) {
+        return update(getId(id), dto);
     }
 
     /**
-     * Creates a new Data Object.
+     * Creates a new DTO.
      * 
-     * @param dataObject
-     * @return id for the created Data Object or null when the creation failed.
+     * @param dto
+     * @return id for the created DTO or null when the creation failed.
      */
-    String create(DO dataObject);
+    String create(DTO dto);
 }

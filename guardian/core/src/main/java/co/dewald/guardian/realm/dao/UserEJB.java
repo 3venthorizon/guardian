@@ -55,6 +55,11 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
     };
     
     @Override
+    public String getId(User id) {
+        return id.getId();
+    }
+
+    @Override
     public Function<Subject, User> model2dto() {
         return MODEL2DTO;
     }
