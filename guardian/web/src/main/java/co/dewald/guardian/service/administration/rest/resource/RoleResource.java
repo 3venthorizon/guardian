@@ -36,12 +36,12 @@ public interface RoleResource extends Resource<Role> {
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response fetch();
+    Response get();
 
     @GET @Path(PATH_ID)
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response find(@PathParam(value = "group") String group);
+    Response get(@PathParam(value = "group") String group);
 
     @DELETE @Path(PATH_ID)
     @Override
@@ -50,10 +50,10 @@ public interface RoleResource extends Resource<Role> {
     @PUT @Path(PATH_ID)
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response update(@PathParam(value = "group") String group, Role role);
+    Response put(@PathParam(value = "group") String group, Role role);
 
     @POST
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response create(Role role);
+    Response post(Role role);
 }

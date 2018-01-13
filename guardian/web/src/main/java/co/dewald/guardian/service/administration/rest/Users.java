@@ -7,7 +7,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import co.dewald.guardian.admin.dao.UserDAO;
 import co.dewald.guardian.dao.DAO;
 import co.dewald.guardian.dto.User;
 import co.dewald.guardian.service.administration.rest.resource.PermissionResource;
@@ -24,7 +23,7 @@ public class Users extends BridgeResource<User> implements UserResource {
     
     @Context ResourceContext resourceContext;
     @Context UriInfo uriInfo;
-    @EJB UserDAO userDAO;
+    @EJB(beanName = "UserDAO") DAO<User> userDAO;
     
     Response roleResponse;
     Response permissionResponse;
@@ -42,7 +41,6 @@ public class Users extends BridgeResource<User> implements UserResource {
     @Override
     public RoleResource subRoles(String username) {
         Roles roles = resourceContext.getResource(Roles.class);
-        roles.userResponse = find(username);
         
         return roles;
     }
@@ -50,7 +48,6 @@ public class Users extends BridgeResource<User> implements UserResource {
     @Override
     public PermissionResource subPermissions(String username) {
         Permissions permissions = resourceContext.getResource(Permissions.class);
-        permissions.userResponse = find(username);
         
         return permissions;
     }

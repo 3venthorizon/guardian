@@ -7,7 +7,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import co.dewald.guardian.admin.dao.RoleDAO;
 import co.dewald.guardian.dao.DAO;
 import co.dewald.guardian.dto.Role;
 import co.dewald.guardian.service.administration.rest.resource.PermissionResource;
@@ -24,7 +23,7 @@ public class Roles extends BridgeResource<Role> implements RoleResource {
     
     @Context ResourceContext resourceContext;
     @Context UriInfo uriInfo;
-    @EJB RoleDAO roleDAO;
+    @EJB(beanName = "RoleDAO") DAO<Role> roleDAO;
     
     Response userResponse;
     Response permissionResponse;
@@ -42,7 +41,6 @@ public class Roles extends BridgeResource<Role> implements RoleResource {
     @Override
     public UserResource subUsers(String group) {
         Users users = resourceContext.getResource(Users.class);
-        users.roleResponse = find(group);
         
         return users;
     }
@@ -50,7 +48,7 @@ public class Roles extends BridgeResource<Role> implements RoleResource {
     @Override
     public PermissionResource subPermissions(String group) {
         Permissions permissions = resourceContext.getResource(Permissions.class);
-        permissions.roleResponse = find(group);
+        permissions.roleResponse = get(group);
         
         return permissions;
     }

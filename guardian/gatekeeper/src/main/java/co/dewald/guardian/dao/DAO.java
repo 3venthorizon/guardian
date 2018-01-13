@@ -13,14 +13,23 @@ import java.util.List;
  */
 public interface DAO<DTO extends co.dewald.guardian.dto.DTO> {
     
+    /**
+     * 
+     * @param id
+     * @return string id from composite dto.
+     */
     String getId(DTO id);
     
+    DTO getId(String id);
+
     /**
      * Fetches DTOs.
      * 
      * @return list of DTOs
      */
     List<DTO> fetch();
+    
+    <C extends co.dewald.guardian.dto.DTO> List<DTO> fetchBy(C criteria);
     
     /**
      * Finds a DTO by its ID.
@@ -45,6 +54,7 @@ public interface DAO<DTO extends co.dewald.guardian.dto.DTO> {
     default Boolean delete(DTO id) {
         return delete(getId(id));
     }
+    
 
     /**
      * Updates the DTO with the following steps:
@@ -63,6 +73,8 @@ public interface DAO<DTO extends co.dewald.guardian.dto.DTO> {
         return update(getId(id), dto);
     }
 
+    <R extends co.dewald.guardian.dto.DTO> Boolean linkReference(boolean link, DTO id, R reference);
+
     /**
      * Creates a new DTO.
      * 
@@ -70,4 +82,5 @@ public interface DAO<DTO extends co.dewald.guardian.dto.DTO> {
      * @return id for the created DTO or null when the creation failed.
      */
     String create(DTO dto);
+    
 }

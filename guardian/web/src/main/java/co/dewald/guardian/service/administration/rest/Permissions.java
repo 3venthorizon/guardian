@@ -7,7 +7,6 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 
-import co.dewald.guardian.admin.dao.PermissionDAO;
 import co.dewald.guardian.dao.DAO;
 import co.dewald.guardian.dto.Permission;
 import co.dewald.guardian.service.administration.rest.resource.PermissionResource;
@@ -23,7 +22,7 @@ public class Permissions extends BridgeResource<Permission> implements Permissio
     
     @Context ResourceContext resourceContext;
     @Context UriInfo uriInfo;
-    @EJB PermissionDAO permissionDAO;
+    @EJB(beanName = "PermissionDAO") DAO<Permission> permissionDAO;
     
     Response userResponse;
     Response roleResponse;
@@ -41,7 +40,6 @@ public class Permissions extends BridgeResource<Permission> implements Permissio
     @Override
     public UserResource subUsers(String resource, String action) {
         Users users = resourceContext.getResource(Users.class);
-        users.permissionResponse = find(resource, action);
         
         return users;
     }
@@ -49,9 +47,6 @@ public class Permissions extends BridgeResource<Permission> implements Permissio
     @Override
     public RoleResource subRoles(String resource, String action) {
         Roles roles = resourceContext.getResource(Roles.class);
-        roles.permissionResponse = find(resource, action);
-        
-        uriInfo.
         
         return roles;
     }    

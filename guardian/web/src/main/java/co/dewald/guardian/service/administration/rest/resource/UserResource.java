@@ -39,12 +39,12 @@ public interface UserResource extends Resource<User> {
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response fetch();
+    Response get();
     
     @GET @Path(PATH_ID)
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response find(@PathParam(value = "username") String username);
+    Response get(@PathParam(value = "username") String username);
 
     @DELETE @Path(PATH_ID)
     @Override
@@ -53,11 +53,11 @@ public interface UserResource extends Resource<User> {
     @PUT @Path(PATH_ID)
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response update(@PathParam(value = "username") String username, User user);
+    Response put(@PathParam(value = "username") String username, User user);
 
     @POST
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response create(User user);
+    Response post(User user);
 
 }
