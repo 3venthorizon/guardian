@@ -12,7 +12,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import co.dewald.guardian.admin.dao.PermissionDAO;
+import co.dewald.guardian.dao.DAO;
+import co.dewald.guardian.dto.DTO;
 import co.dewald.guardian.dto.User;
 import co.dewald.guardian.gate.Grant;
 import co.dewald.guardian.gate.Guard;
@@ -27,7 +28,8 @@ import co.dewald.guardian.realm.Subject;
 //FIXME @Guard
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Stateless(name = "PermissionDAO")
-public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.dto.Permission>, PermissionDAO {
+public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.dto.Permission>, 
+                                      DAO<co.dewald.guardian.dto.Permission> {
 
     @PersistenceContext(unitName = "realm") EntityManager em;
     @EJB RealmDAO realm;
@@ -55,6 +57,21 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     };
 
     @Override
+    public String getId(co.dewald.guardian.dto.Permission id) {
+        return id.getResource() + ':' + id.getAction();
+    }
+    
+    @Override
+    public co.dewald.guardian.dto.Permission getId(String id) {
+        String[] splitIds = id.split(":");
+        co.dewald.guardian.dto.Permission permissionId = new co.dewald.guardian.dto.Permission();
+        permissionId.setResource(splitIds[0]);
+        permissionId.setAction(splitIds[1]);
+        
+        return permissionId;
+    }
+
+    @Override
     public Function<Permission, co.dewald.guardian.dto.Permission> model2dto() {
         return MODEL2DTO;
     }
@@ -66,19 +83,27 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     }
 
     @Override
-    public List<co.dewald.guardian.dto.Permission> fetchBy(co.dewald.guardian.dto.Role role) {
-        TypedQuery<Permission> query = em.createNamedQuery(Permission.QUERY_BY_ROLE, Permission.class);
-        query.setParameter(Role.PARAM_ROLE, role.getId());
-        
-        return fetch(query);
+    public <C extends DTO> List<co.dewald.guardian.dto.Permission> fetchBy(C criteria) {
+        try {
+            TypedQuery<Permission> query;
+            
+            if (criteria instanceof co.dewald.guardian.dto.Role) {
+                query = em.createNamedQuery(Permission.QUERY_BY_ROLE, Permission.class);
+                query.setParameter(Role.PARAM_ROLE, criteria.getId());
+            } else if (criteria instanceof User) {
+                query = em.createNamedQuery(Permission.QUERY_BY_SUBJECT, Permission.class);
+                query.setParameter(Subject.PARAM_USERNAME, criteria.getId());
+            } else return null;
+            
+            return fetch(query);
+        } catch (Exception e) {
+            return null;
+        }
     }
 
     @Override
-    public List<co.dewald.guardian.dto.Permission> fetchBy(User user) {
-        TypedQuery<Permission> query = em.createNamedQuery(Permission.QUERY_BY_SUBJECT, Permission.class);
-        query.setParameter(Subject.PARAM_USERNAME, user.getId());
-        
-        return fetch(query);
+    public co.dewald.guardian.dto.Permission find(String id) {
+        return find(getId(id));
     }
 
     @Override
@@ -91,10 +116,15 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     public String create(co.dewald.guardian.dto.Permission dto) {
         try {
             realm.create(DTO2MODEL.apply(dto));
-            return dto.getResource() + ':' + dto.getAction();
+            return getId(dto);
         } catch (Exception e) {
             return null;
         }
+    }
+
+    @Override
+    public Boolean update(String id, co.dewald.guardian.dto.Permission dto) {
+        return update(getId(id), dto);
     }
 
     @Override
@@ -109,10 +139,15 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
             permission.setBypass(dto.isBypass());
             
             realm.update(permission);
-            return true;
+            return Boolean.TRUE;
         } catch (Exception e) {
-            return false;
+            return Boolean.FALSE;
         }
+    }
+
+    @Override
+    public Boolean delete(String id) {
+        return delete(getId(id));
     }
 
     @Override
@@ -122,22 +157,27 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
         
         try {
             realm.remove(permission);
-            return true;
+            return Boolean.TRUE;
         } catch (Exception e) {
-            return false;
+            return Boolean.FALSE;
         }
     }
 
     @Override
-    public boolean link(boolean link, co.dewald.guardian.dto.Permission permission, co.dewald.guardian.dto.Role role) {
+    public <R extends DTO> Boolean linkReference(boolean link, co.dewald.guardian.dto.Permission id, R reference) {
         try {
-            realm.linkRolePermission(link, role.getId(), permission.getResource(), permission.getAction());
-            return true;
+            if (reference instanceof co.dewald.guardian.dto.Role) {
+                realm.linkRolePermission(link, reference.getId(), id.getResource(), id.getAction());
+                return Boolean.TRUE;
+            }
+        } catch (NullPointerException npe) {
+            return null;
         } catch (Exception e) {
-            return false;
         }
+        
+        return Boolean.FALSE;
     }
-    
+
     @Grant(check = false)
     Permission findPermission(String resource, String action) {
         try {

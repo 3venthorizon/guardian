@@ -28,24 +28,28 @@ public interface PermissionResource extends Resource<Permission> {
     
     public static final String PATH_ID = "{resource}:{action}";
 
+    default String composeID(String resource, String action) {
+        return resource + ':' + action;
+    }
+
     @Path(PATH_ID + "/users")
-    UserResource linkUsers(@PathParam(value = "resource") String resource, 
-                           @PathParam(value = "action") String action);
+    UserResource subUsers(@PathParam(value = "resource") String resource, 
+                          @PathParam(value = "action") String action);
 
     @Path(PATH_ID + "/roles")
-    RoleResource linkRoles(@PathParam(value = "resource") String resource, 
-                           @PathParam(value = "action") String action);
+    RoleResource subRoles(@PathParam(value = "resource") String resource, 
+                          @PathParam(value = "action") String action);
 
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
-    Response fetch();
+    Response get();
 
     @GET @Path(PATH_ID)
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     default Response find(@PathParam(value = "resource") String resource, 
                           @PathParam(value = "action") String action) {
         String id = composeID(resource, action);
-        return find(id);
+        return get(id);
     }
 
     @DELETE @Path(PATH_ID)
@@ -60,15 +64,11 @@ public interface PermissionResource extends Resource<Permission> {
     default Response update(@PathParam(value = "resource") String resource, 
                     @PathParam(value = "action") String action, Permission permission) {
         String id = composeID(resource, action);
-        return update(id, permission);
+        return put(id, permission);
     }
 
     @POST
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response create(Permission permission);
-    
-    default String composeID(String resource, String action) {
-        return resource + ':' + action;
-    }
+    Response post(Permission permission);
 }

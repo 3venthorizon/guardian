@@ -25,35 +25,37 @@ import co.dewald.guardian.service.rest.Resource;
 @Path("roles")
 public interface RoleResource extends Resource<Role> {
     
-    public static final String PATH_ID = "{group}";
+    public static final String PATH_PARAM_ID = "role";
+    public static final String PATH_ID = "{" + PATH_PARAM_ID + "}";
     
     @Path(PATH_ID + "/users")
-    UserResource linkUserResource(@PathParam(value = "group") String group);
+    UserResource subUsers(@PathParam(value = PATH_PARAM_ID) String role);
 
     @Path(PATH_ID + "/permissions")
-    PermissionResource linkPermissions(@PathParam(value = "group") String group);
+    PermissionResource subPermissions(@PathParam(value = PATH_PARAM_ID) String role);
 
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response fetch();
+    Response get();
 
     @GET @Path(PATH_ID)
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response find(@PathParam(value = "group") String group);
+    Response get(@PathParam(value = PATH_PARAM_ID) String role);
 
     @DELETE @Path(PATH_ID)
     @Override
-    Response delete(@PathParam(value = "group") String group);
+    Response delete(@PathParam(value = PATH_PARAM_ID) String role);
 
     @PUT @Path(PATH_ID)
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response update(@PathParam(value = "group") String group, Role role);
+    Response put(@PathParam(value = PATH_PARAM_ID) String id, Role role);
 
     @POST
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response create(Role role);
+    Response post(Role role);
+    
 }

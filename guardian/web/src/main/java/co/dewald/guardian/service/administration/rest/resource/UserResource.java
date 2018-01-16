@@ -28,36 +28,37 @@ import co.dewald.guardian.service.rest.Resource;
 @Path("users")
 public interface UserResource extends Resource<User> {
     
-    public static final String PATH_ID = "{username}";
+    public static final String PATH_PARAM_ID = "username";
+    public static final String PATH_ID = "{" + PATH_PARAM_ID + "}";
 
     @Path(PATH_ID + "/roles")
-    RoleResource linkRoles(@PathParam(value = "username") String username);
+    RoleResource subRoles(@PathParam(value = PATH_PARAM_ID) String username);
 
     @Path(PATH_ID + "/permissions")
-    PermissionResource linkPermissions(@PathParam(value = "username") String username);
+    PermissionResource subPermissions(@PathParam(value = PATH_PARAM_ID) String username);
 
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response fetch();
+    Response get();
     
     @GET @Path(PATH_ID)
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response find(@PathParam(value = "username") String username);
+    Response get(@PathParam(value = PATH_PARAM_ID) String username);
 
     @DELETE @Path(PATH_ID)
     @Override
-    Response delete(@PathParam(value = "username") String username);
+    Response delete(@PathParam(value = PATH_PARAM_ID) String username);
 
     @PUT @Path(PATH_ID)
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response update(@PathParam(value = "username") String username, User user);
+    Response put(@PathParam(value = PATH_PARAM_ID) String username, User user);
 
     @POST
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response create(User user);
+    Response post(User user);
 
 }

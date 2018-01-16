@@ -106,7 +106,7 @@ public class GuardianAuthoriseTest {
     public void roleEmptyPermissions() {
         data.subject = new Subject();
         Role role = new Role();
-        role.setGroup("Role");
+        role.setRole("Role");
         data.subject.getRoles().add(role);
         data.permission = new Permission();
         data.permission.setActive(Boolean.TRUE);
@@ -121,7 +121,7 @@ public class GuardianAuthoriseTest {
         data.subject = new Subject();
         Permission mismatch = new Permission(ACTION, RESOURCE, Boolean.TRUE, Boolean.FALSE);
         Role role = new Role();
-        role.setGroup("Role");
+        role.setRole("Role");
         role.getPermissions().add(mismatch);
         data.subject.getRoles().add(role);
         data.permission = new Permission(RESOURCE, ACTION, Boolean.TRUE, Boolean.FALSE);
@@ -136,7 +136,7 @@ public class GuardianAuthoriseTest {
         data.subject = new Subject();
         Permission found = new Permission(RESOURCE, ACTION, Boolean.TRUE, Boolean.FALSE);
         Role role = new Role();
-        role.setGroup("Role");
+        role.setRole("Role");
         role.getPermissions().add(found);
         data.subject.getRoles().add(role);
         data.permission = new Permission(RESOURCE, ACTION, Boolean.TRUE, Boolean.FALSE);

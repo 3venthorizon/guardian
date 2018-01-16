@@ -1,10 +1,6 @@
 package co.dewald.guardian.realm.dao;
 
 
-import static co.dewald.guardian.realm.Permission.PARAM_RESOURCE;
-import static co.dewald.guardian.realm.Permission.PARAM_ACTION;
-import static co.dewald.guardian.realm.Role.PARAM_ROLE;
-
 import java.util.List;
 import java.util.function.Function;
 
@@ -16,12 +12,13 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 
-import co.dewald.guardian.admin.dao.UserDAO;
-import co.dewald.guardian.dto.Permission;
-import co.dewald.guardian.dto.Role;
+import co.dewald.guardian.dao.DAO;
+import co.dewald.guardian.dto.DTO;
 import co.dewald.guardian.dto.User;
 import co.dewald.guardian.gate.Grant;
 import co.dewald.guardian.gate.Guard;
+import co.dewald.guardian.realm.Permission;
+import co.dewald.guardian.realm.Role;
 import co.dewald.guardian.realm.Subject;
 
 
@@ -31,7 +28,7 @@ import co.dewald.guardian.realm.Subject;
 //FIXME @Guard
 @TransactionManagement(TransactionManagementType.CONTAINER)
 @Stateless(name = "UserDAO")
-public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
+public class UserEJB implements Model2DTO<Subject, User>, DAO<User> {
 
     @PersistenceContext(unitName = "realm") EntityManager em;
     @EJB RealmDAO realm;
@@ -55,6 +52,19 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
     };
     
     @Override
+    public String getId(User id) {
+        return id.getId();
+    }
+
+    @Override
+    public User getId(String id) {
+        User userId = new User();
+        userId.setId(id);
+        
+        return userId;
+    }
+
+    @Override
     public Function<Subject, User> model2dto() {
         return MODEL2DTO;
     }
@@ -66,20 +76,24 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
     }
 
     @Override
-    public List<User> fetchBy(Role role) {
-        TypedQuery<Subject> query = em.createNamedQuery(Subject.QUERY_BY_ROLE, Subject.class);
-        query.setParameter(PARAM_ROLE, role.getId());
-        
-        return fetch(query);
-    }
-
-    @Override
-    public List<User> fetchBy(Permission permission) {
-        TypedQuery<Subject> query = em.createNamedQuery(Subject.QUERY_BY_PERMISSION, Subject.class);
-        query.setParameter(PARAM_RESOURCE, permission.getResource());
-        query.setParameter(PARAM_ACTION, permission.getAction());
-        
-        return fetch(query);
+    public <C extends DTO> List<User> fetchBy(C criteria) {
+        try {
+            TypedQuery<Subject> query;
+            
+            if (criteria instanceof co.dewald.guardian.dto.Permission) {
+                co.dewald.guardian.dto.Permission permissionCriteria = (co.dewald.guardian.dto.Permission) criteria;
+                query = em.createNamedQuery(Subject.QUERY_BY_PERMISSION, Subject.class);
+                query.setParameter(Permission.PARAM_RESOURCE, permissionCriteria.getResource());
+                query.setParameter(Permission.PARAM_ACTION, permissionCriteria.getAction());
+            } else if (criteria instanceof User) {
+                query = em.createNamedQuery(Subject.QUERY_BY_ROLE, Subject.class);
+                query.setParameter(Role.PARAM_ROLE, criteria.getId());
+            } else return null;
+            
+            return fetch(query);
+        } catch (Exception e) {
+            return null;
+        }
     }
     
     @Override
@@ -95,9 +109,9 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
         
         try {
             realm.remove(subject);
-            return true;
+            return Boolean.TRUE;
         } catch (Exception e) {
-            return false;
+            return Boolean.FALSE;
         }
     }
 
@@ -111,9 +125,9 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
             subject.setPassword(user.getPassword());
             
             realm.update(subject);
-            return true;
+            return Boolean.TRUE;
         } catch (Exception e) {
-            return false;
+            return Boolean.FALSE;
         }
     }
 
@@ -128,15 +142,20 @@ public class UserEJB implements Model2DTO<Subject, User>, UserDAO {
     }
 
     @Override
-    public boolean link(boolean link, User user, Role roleGroup) {
+    public <R extends DTO> Boolean linkReference(boolean link, User id, R reference) {
         try {
-            realm.linkUserRole(link, user.getId(), roleGroup.getId());
-            return true;
+            if (reference instanceof co.dewald.guardian.dto.Role) {
+                realm.linkUserRole(link, id.getId(), reference.getId());
+                return Boolean.TRUE;
+            }
+        } catch (NullPointerException npe) {
+            return null;
         } catch (Exception e) {
-            return false;
         }
+        
+        return Boolean.FALSE;
     }
-    
+
     @Grant(check = false)
     Subject findSubject(String username) {
         try {
