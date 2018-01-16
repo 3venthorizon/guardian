@@ -28,6 +28,10 @@ public interface PermissionResource extends Resource<Permission> {
     
     public static final String PATH_ID = "{resource}:{action}";
 
+    default String composeID(String resource, String action) {
+        return resource + ':' + action;
+    }
+
     @Path(PATH_ID + "/users")
     UserResource subUsers(@PathParam(value = "resource") String resource, 
                           @PathParam(value = "action") String action);
@@ -67,8 +71,4 @@ public interface PermissionResource extends Resource<Permission> {
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
     Response post(Permission permission);
-    
-    default String composeID(String resource, String action) {
-        return resource + ':' + action;
-    }
 }

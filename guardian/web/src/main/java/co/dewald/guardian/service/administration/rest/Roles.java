@@ -2,10 +2,6 @@ package co.dewald.guardian.service.administration.rest;
 
 
 import javax.ejb.EJB;
-import javax.ws.rs.container.ResourceContext;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.UriInfo;
 
 import co.dewald.guardian.dao.DAO;
 import co.dewald.guardian.dto.Role;
@@ -21,12 +17,7 @@ import co.dewald.guardian.service.rest.BridgeResource;
  */
 public class Roles extends BridgeResource<Role> implements RoleResource {
     
-    @Context ResourceContext resourceContext;
-    @Context UriInfo uriInfo;
     @EJB(beanName = "RoleDAO") DAO<Role> roleDAO;
-    
-    Response userResponse;
-    Response permissionResponse;
     
     @Override
     protected DAO<Role> getDAO() {
@@ -34,22 +25,12 @@ public class Roles extends BridgeResource<Role> implements RoleResource {
     }
 
     @Override
-    protected UriInfo getUriInfo() {
-        return uriInfo;
-    }
-
-    @Override
     public UserResource subUsers(String group) {
-        Users users = resourceContext.getResource(Users.class);
-        
-        return users;
+        return delegate(group, Users.class);
     }
 
     @Override
     public PermissionResource subPermissions(String group) {
-        Permissions permissions = resourceContext.getResource(Permissions.class);
-        permissions.roleResponse = get(group);
-        
-        return permissions;
+        return delegate(group, Permissions.class);
     }
 }

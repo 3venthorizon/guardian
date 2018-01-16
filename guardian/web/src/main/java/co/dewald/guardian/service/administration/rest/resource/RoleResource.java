@@ -25,13 +25,14 @@ import co.dewald.guardian.service.rest.Resource;
 @Path("roles")
 public interface RoleResource extends Resource<Role> {
     
-    public static final String PATH_ID = "{group}";
+    public static final String PATH_PARAM_ID = "role";
+    public static final String PATH_ID = "{" + PATH_PARAM_ID + "}";
     
     @Path(PATH_ID + "/users")
-    UserResource subUsers(@PathParam(value = "group") String group);
+    UserResource subUsers(@PathParam(value = PATH_PARAM_ID) String role);
 
     @Path(PATH_ID + "/permissions")
-    PermissionResource subPermissions(@PathParam(value = "group") String group);
+    PermissionResource subPermissions(@PathParam(value = PATH_PARAM_ID) String role);
 
     @GET
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
@@ -41,19 +42,20 @@ public interface RoleResource extends Resource<Role> {
     @GET @Path(PATH_ID)
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response get(@PathParam(value = "group") String group);
+    Response get(@PathParam(value = PATH_PARAM_ID) String role);
 
     @DELETE @Path(PATH_ID)
     @Override
-    Response delete(@PathParam(value = "group") String group);
+    Response delete(@PathParam(value = PATH_PARAM_ID) String role);
 
     @PUT @Path(PATH_ID)
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
-    Response put(@PathParam(value = "group") String group, Role role);
+    Response put(@PathParam(value = PATH_PARAM_ID) String id, Role role);
 
     @POST
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
     Response post(Role role);
+    
 }

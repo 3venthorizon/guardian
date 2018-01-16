@@ -139,9 +139,9 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
             permission.setBypass(dto.isBypass());
             
             realm.update(permission);
-            return true;
+            return Boolean.TRUE;
         } catch (Exception e) {
-            return false;
+            return Boolean.FALSE;
         }
     }
 
@@ -157,9 +157,9 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
         
         try {
             realm.remove(permission);
-            return true;
+            return Boolean.TRUE;
         } catch (Exception e) {
-            return false;
+            return Boolean.FALSE;
         }
     }
 
@@ -167,14 +167,15 @@ public class PermissionEJB implements Model2DTO<Permission, co.dewald.guardian.d
     public <R extends DTO> Boolean linkReference(boolean link, co.dewald.guardian.dto.Permission id, R reference) {
         try {
             if (reference instanceof co.dewald.guardian.dto.Role) {
-                realm.linkRolePermission(link, id.getResource(), id.getAction(), reference.getId());
-                return true;
+                realm.linkRolePermission(link, reference.getId(), id.getResource(), id.getAction());
+                return Boolean.TRUE;
             }
+        } catch (NullPointerException npe) {
+            return null;
         } catch (Exception e) {
-            return false;
         }
         
-        return null;
+        return Boolean.FALSE;
     }
 
     @Grant(check = false)

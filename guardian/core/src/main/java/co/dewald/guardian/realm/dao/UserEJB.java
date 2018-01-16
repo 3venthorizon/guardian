@@ -109,9 +109,9 @@ public class UserEJB implements Model2DTO<Subject, User>, DAO<User> {
         
         try {
             realm.remove(subject);
-            return true;
+            return Boolean.TRUE;
         } catch (Exception e) {
-            return false;
+            return Boolean.FALSE;
         }
     }
 
@@ -125,9 +125,9 @@ public class UserEJB implements Model2DTO<Subject, User>, DAO<User> {
             subject.setPassword(user.getPassword());
             
             realm.update(subject);
-            return true;
+            return Boolean.TRUE;
         } catch (Exception e) {
-            return false;
+            return Boolean.FALSE;
         }
     }
 
@@ -146,13 +146,14 @@ public class UserEJB implements Model2DTO<Subject, User>, DAO<User> {
         try {
             if (reference instanceof co.dewald.guardian.dto.Role) {
                 realm.linkUserRole(link, id.getId(), reference.getId());
-                return true;
+                return Boolean.TRUE;
             }
+        } catch (NullPointerException npe) {
+            return null;
         } catch (Exception e) {
-            return false;
         }
         
-        return null;
+        return Boolean.FALSE;
     }
 
     @Grant(check = false)

@@ -6,6 +6,9 @@ import java.util.List;
 
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
+import javax.ws.rs.POST;
+import javax.ws.rs.container.ResourceContext;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
@@ -14,18 +17,24 @@ import co.dewald.guardian.dao.DAO;
 
 
 /**
+ * @param <DTO>
  * 
  * @author Dewald Pretorius
  */
 public abstract class BridgeResource<DTO extends co.dewald.guardian.dto.DTO> implements Resource<DTO> {
     
-    protected Response supResponse;
+    @Context protected ResourceContext resourceContext;
+    @Context protected UriInfo uriInfo;
     
     protected abstract DAO<DTO> getDAO();
-    protected abstract UriInfo getUriInfo();
+    
+    protected Response response;
     
     @Override
     public Response get() {
+        Response response = subGet();
+        if (response != null) return response;
+        
         List<DTO> dtoList = getDAO().fetch();
         return content(dtoList);
     }
@@ -44,12 +53,19 @@ public abstract class BridgeResource<DTO extends co.dewald.guardian.dto.DTO> imp
     
     @Override
     public Response delete(String id) {
+        DTO dtoId = getDAO().getId(id);
+        Response response = subLink(false, dtoId);
+        if (response != null) return response;
+        
         Boolean success = getDAO().delete(id);
         return noContent(success);
     }
     
     @Override
     public Response delete(DTO id) {
+        Response response = subLink(false, id);
+        if (response != null) return response;
+        
         Boolean success = getDAO().delete(id);
         return noContent(success);
     }
@@ -68,26 +84,46 @@ public abstract class BridgeResource<DTO extends co.dewald.guardian.dto.DTO> imp
     
     @Override
     public Response post(DTO dto) {
+        Response response = subLink(true, dto);
+        if (response != null) return response;
+        
         String id = getDAO().create(dto);
         return created(id);
     }
     
-    /**
-     * Gets the Super Resource's response.
-     * 
-     * @return supResponse of supper resource or null if this resource was not a delegated
-     */
-    public Response getSupResponse() {
-        return supResponse;
+    @POST
+    public Response post(DTO dto, String... delegatedParameters) {
+        return post(dto);
     }
     
-    /**
-     * Sets the Super Resource's response.
-     * 
-     * @param supResponse
-     */
-    public void setSupResponse(Response supResponse) {
-        this.supResponse = supResponse;
+    protected <S extends co.dewald.guardian.dto.DTO, R extends BridgeResource<S>> R 
+            delegate(String id, Class<R> subResourceType) {
+        response = get(id);
+        return resourceContext.getResource(subResourceType);
+    }
+    
+    protected <S extends co.dewald.guardian.dto.DTO, R extends BridgeResource<S>> R 
+            delegate(DTO id, Class<R> subResourceType) {
+        response = get(id);
+        return resourceContext.getResource(subResourceType);
+    }
+    
+    protected <S extends co.dewald.guardian.dto.DTO> Response subGet() {
+        S superDTO = getSuperResourceDTO();
+        if (superDTO == null) return null;
+        
+        List<DTO> dtoList = getDAO().fetchBy(superDTO);
+        return content(dtoList);
+    }
+
+    protected <S extends co.dewald.guardian.dto.DTO> Response subLink(boolean link, DTO dtoId) {
+        S superDTO = getSuperResourceDTO();
+        if (superDTO == null) return null;
+        
+        Boolean success = getDAO().linkReference(link, dtoId, superDTO);
+        
+        if (link && Boolean.TRUE.equals(success)) return created(getDAO().getId(dtoId)); //linked
+        return noContent(success); //de-linked & errors
     }
     
     protected Response content(DTO dto) {
@@ -105,7 +141,7 @@ public abstract class BridgeResource<DTO extends co.dewald.guardian.dto.DTO> imp
     protected Response created(String id) {
         if (id == null) throw new InternalServerErrorException();
         
-        URI location = getUriInfo().getAbsolutePathBuilder().path(id).build();
+        URI location = uriInfo.getAbsolutePathBuilder().path(id).build();
         return Response.created(location).build();
     }
     
@@ -114,5 +150,19 @@ public abstract class BridgeResource<DTO extends co.dewald.guardian.dto.DTO> imp
         if (Boolean.FALSE.equals(success)) throw new InternalServerErrorException();
         
         return Response.noContent().build();
+    }
+    
+    @SuppressWarnings("unchecked")
+    protected <S extends co.dewald.guardian.dto.DTO> S getSuperResourceDTO() {
+        List<?> resources = uriInfo.getMatchedResources();
+        if (resources.size() <= 1) return null;
+        
+        Object parentResource = resources.get(1);
+        if ((parentResource instanceof BridgeResource) == false) return null;
+        
+        BridgeResource<S> resource = (BridgeResource<S>) parentResource;
+        if (resource.response == null) return null;
+        
+        return (S) resource.response.getEntity();
     }
 }

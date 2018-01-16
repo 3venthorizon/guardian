@@ -38,14 +38,14 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, DA
         if (model == null) return null;
         
         co.dewald.guardian.dto.Role dto = new co.dewald.guardian.dto.Role();
-        dto.setId(model.getGroup());
+        dto.setId(model.getRole());
         
         return dto;
     };
     
     static final Function<co.dewald.guardian.dto.Role, Role> DTO2MODEL = dto -> {
         Role role = new Role();
-        role.setGroup(dto.getId());
+        role.setRole(dto.getId());
         
         return role;
     };
@@ -108,9 +108,9 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, DA
         
         try {
             realm.remove(role);
-            return true;
+            return Boolean.TRUE;
         } catch (Exception e) {
-            return false;
+            return Boolean.FALSE;
         }
     }
 
@@ -120,12 +120,12 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, DA
         if (role == null) return null;
         
         try {
-            role.setGroup(dto.getId());
+            role.setRole(dto.getId());
             
             realm.update(role);
-            return true;
+            return Boolean.TRUE;
         } catch (Exception e) {
-            return false;
+            return Boolean.FALSE;
         }
     }
 
@@ -143,20 +143,21 @@ public class RoleEJB implements Model2DTO<Role, co.dewald.guardian.dto.Role>, DA
     public <R extends DTO> Boolean linkReference(boolean link, co.dewald.guardian.dto.Role id, R reference) {
         try {
             if (reference instanceof User) {
-                realm.linkUserRole(link, id.getId(), reference.getId());
-                return true;
+                realm.linkUserRole(link, reference.getId(), id.getId());
+                return Boolean.TRUE;
             }
             
             if (reference instanceof co.dewald.guardian.dto.Permission) {
                 co.dewald.guardian.dto.Permission permission = (co.dewald.guardian.dto.Permission) reference;
                 realm.linkRolePermission(link, id.getId(), permission.getResource(), permission.getAction());
-                return true;
+                return Boolean.TRUE;
             }
+        } catch (NullPointerException npe) {
+            return null;
         } catch (Exception e) {
-            return false;
         }
         
-        return null;
+        return Boolean.FALSE;
     }
 
     @Grant(check = false)
