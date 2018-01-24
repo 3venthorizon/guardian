@@ -23,24 +23,25 @@ import co.dewald.guardian.service.rest.Resource;
  * 
  * @author Dewald Pretorius
  */
-@Path("permissions")
+@Path(PermissionResource.PATH_RESOURCE)
 public interface PermissionResource extends Resource<Permission> {
     
-    public static final String PATH_ID = "{resource}:{action}";
+    public static final String PATH_RESOURCE = "/permissions";
+    public static final String PATH_ID = "/{resource}:{action}";
 
     default String composeID(String resource, String action) {
         return resource + ':' + action;
     }
 
-    @Path(PATH_ID + "/users")
+    @Path(PATH_ID + UserResource.PATH_RESOURCE)
     UserResource subUsers(@PathParam(value = "resource") String resource, 
                           @PathParam(value = "action") String action);
 
-    @Path(PATH_ID + "/roles")
+    @Path(PATH_ID + RoleResource.PATH_RESOURCE)
     RoleResource subRoles(@PathParam(value = "resource") String resource, 
                           @PathParam(value = "action") String action);
 
-    @GET
+    @GET 
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     Response get();
 
@@ -62,12 +63,12 @@ public interface PermissionResource extends Resource<Permission> {
     @PUT @Path(PATH_ID)
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     default Response update(@PathParam(value = "resource") String resource, 
-                    @PathParam(value = "action") String action, Permission permission) {
+                            @PathParam(value = "action") String action, Permission permission) {
         String id = composeID(resource, action);
         return put(id, permission);
     }
 
-    @POST
+    @POST 
     @Consumes(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
     Response post(Permission permission);

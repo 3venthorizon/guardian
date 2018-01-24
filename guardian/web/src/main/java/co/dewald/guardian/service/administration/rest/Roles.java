@@ -2,6 +2,7 @@ package co.dewald.guardian.service.administration.rest;
 
 
 import javax.ejb.EJB;
+import javax.ws.rs.core.Response;
 
 import co.dewald.guardian.dao.DAO;
 import co.dewald.guardian.dto.Role;
@@ -32,5 +33,10 @@ public class Roles extends BridgeResource<Role> implements RoleResource {
     @Override
     public PermissionResource subPermissions(String group) {
         return delegate(group, Permissions.class);
+    }
+
+    @Override
+    public Response postByUser(String username, Role role) {
+        return super.post(role);
     }
 }

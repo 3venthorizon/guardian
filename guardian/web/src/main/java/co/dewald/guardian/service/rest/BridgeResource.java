@@ -6,7 +6,6 @@ import java.util.List;
 
 import javax.ws.rs.InternalServerErrorException;
 import javax.ws.rs.NotFoundException;
-import javax.ws.rs.POST;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
@@ -89,11 +88,6 @@ public abstract class BridgeResource<DTO extends co.dewald.guardian.dto.DTO> imp
         
         String id = getDAO().create(dto);
         return created(id);
-    }
-    
-    @POST
-    public Response post(DTO dto, String... delegatedParameters) {
-        return post(dto);
     }
     
     protected <S extends co.dewald.guardian.dto.DTO, R extends BridgeResource<S>> R 

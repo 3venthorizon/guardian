@@ -25,19 +25,20 @@ import co.dewald.guardian.service.rest.Resource;
  * 
  * @author Dewald Pretorius
  */
-@Path("users")
+@Path(UserResource.PATH_RESOURCE)
 public interface UserResource extends Resource<User> {
     
+    public static final String PATH_RESOURCE = "/users";
     public static final String PATH_PARAM_ID = "username";
-    public static final String PATH_ID = "{" + PATH_PARAM_ID + "}";
+    public static final String PATH_ID = "/{" + PATH_PARAM_ID + "}";
 
-    @Path(PATH_ID + "/roles")
+    @Path(PATH_ID + RoleResource.PATH_RESOURCE)
     RoleResource subRoles(@PathParam(value = PATH_PARAM_ID) String username);
 
-    @Path(PATH_ID + "/permissions")
+    @Path(PATH_ID + PermissionResource.PATH_RESOURCE)
     PermissionResource subPermissions(@PathParam(value = PATH_PARAM_ID) String username);
 
-    @GET
+    @GET 
     @Produces(value = {APPLICATION_JSON, APPLICATION_XML})
     @Override
     Response get();
